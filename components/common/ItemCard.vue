@@ -36,7 +36,10 @@ function removeItem(item: IItem) {
                 <div class="flex">
                     <slot v-if="hasNormalSize" name="right"></slot>
                     <div class="flex-auto">
-                        <h3 class="font-bold">{{ item.name }}</h3>
+                        <div class="flex justify-between">
+                            <h3 class="font-bold">{{ item.name }}</h3>
+                            <slot name="main"></slot>
+                        </div>
 
                         <UProgress v-if="isLoading" class="mt-2" size="sm" animation="carousel" />
                         <div v-else>

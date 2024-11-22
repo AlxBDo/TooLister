@@ -3,10 +3,18 @@ import type { IOption, TColors, TInputType, TInputValue, TSearchableProps, TVari
 import type { TComponentSize } from "~/types"
 
 export default function useInput() {
-    const vModel = ref()
+    const loading: Ref<boolean> = ref(false)
+    const optionsRef: Ref<IOption[]> = ref([])
+    const vModel: Ref<TInputValue> = ref()
 
 
     //-- Functions --\\
+
+    function setOptions(options: IOption[]) {
+        if (!options) { options = [] }
+
+        optionsRef.value = options
+    }
 
     function setVModel(value: TInputValue) {
         if (!value) { return }
@@ -62,13 +70,13 @@ export default function useInput() {
         debounce: { type: Number, default: 300 },
         loadingIcon: String,
         query: String,
-        searchable: { type: Function as PropType<TSearchableProps> },
+        searchable: { type: Function },
         searchAttributes: Array
     }
 
 
     return {
-        COMPONENT_WITH_OPTIONS_PROPS, FORM_GROUP_PROPS, SELECT_COMPONENT_PROPS, setVModel,
-        STD_COMPONENT_PROPS, vModel
+        COMPONENT_WITH_OPTIONS_PROPS, FORM_GROUP_PROPS, loading, options: optionsRef, SELECT_COMPONENT_PROPS,
+        setOptions, setVModel, STD_COMPONENT_PROPS, vModel
     }
 }

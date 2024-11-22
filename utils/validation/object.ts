@@ -18,6 +18,7 @@ export const areIdentical = (object1: IAnyObject, object2: IAnyObject, compareLe
             } else if (Array.isArray(object1[key])) {
                 acc = object1[key].length === object2[key]?.length
                 acc && object1[key].forEach((item: any, index: number) => {
+                    if (!acc) { return acc }
                     if (typeof item === 'object') {
                         acc = areIdentical(item, object2[key][index]);
                     } else if (item !== object2[key][index]) {

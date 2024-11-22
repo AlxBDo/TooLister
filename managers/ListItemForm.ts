@@ -1,15 +1,17 @@
 import type { GiftItem } from "~/models/giftitem";
+import type { IAnyObject } from "~/types";
 import type { ListItem } from "~/models/listitem";
 import type { ShoppingItem } from "~/models/shoppingitem";
 import type { TaskItem } from "~/models/taskitem";
-import type { IAnyObject } from "~/types";
 import type { TInput, IStdInput, ISelect } from "~/types/form/input";
+import type { TListTypes } from "~/types/list";
+
+import CategoryManager from "./Category";
 import { categoryValidation, descriptionValidation, nameValidation, urlValidation } from "~/utils/validation/listItem";
-import { priceValidation, quantityUnitValidation, quantityValidation } from "~/utils/validation/shoppingItem";
-import type { TListTypes } from "./List";
 import InputManager from "./Input";
 import ListItemManager from "./ListItem";
 import ListManager from "./List";
+import { priceValidation, quantityUnitValidation, quantityValidation } from "~/utils/validation/shoppingItem";
 
 
 export type TListItem = GiftItem | ListItem | ShoppingItem | TaskItem;
@@ -27,14 +29,22 @@ export default class ListItemFormManager {
     }
 
     private static readonly INPUT_MAPPING_BY_PROPERTY: IAnyObject = {
-        category: InputManager.createSelectProperties(
-            { creatable: true, placeholder: 'Categorie', type: 'select', validator: categoryValidation } as ISelect
+        category: InputManager.createSelectProperties({
+            debounce: 750,
+            creatable: true,
+            options: InputManager.createOptionsFromItems(useCategories().categories.value, {}),
+            placeholder: 'Categorie',
+            searchable: CategoryManager.searchCategory,
+            searchAttributes: ['label'],
+            type: 'select',
+            validator: categoryValidation
+        } as ISelect
         ),
         description: InputManager.createInputProperties(
             { placeholder: 'Description', type: 'textarea', validator: descriptionValidation } as IStdInput
         ),
         name: InputManager.createInputProperties(
-            { label: 'Nom', type: 'text', validator: nameValidation } as IStdInput
+            { placeholder: 'Nom', type: 'text', validator: nameValidation } as IStdInput
         ),
         url: InputManager.createInputProperties(
             { placeholder: "url", type: 'text', validator: urlValidation } as IStdInput
@@ -81,7 +91,7 @@ export default class ListItemFormManager {
     }
 
     static submiDataFormater(item: TListItem, listType: TListTypes): TListItem {
-        const integerProperties = ['category', 'durationType', 'priority']
+        const integerProperties = ['durationType', 'priority']
 
         integerProperties.forEach(property => {
             if (item[property]) {
@@ -91,6 +101,14 @@ export default class ListItemFormManager {
 
         if (listType === ListManager.TYPE_GIFT) {
             if (item.buyers) { delete item.buyers }
+        }
+
+        if (!item.category) {
+            item.category = undefined
+        } else if (typeof item.category === 'number') {
+            item.category = `/apip/categories/${item.category}`
+        } else if (typeof item.category === 'string') {
+            item.category = CategoryManager.populateCategory({ name: item.category, listType })
         }
 
         return item

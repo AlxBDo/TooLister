@@ -18,8 +18,10 @@ const props = defineProps({
 const dynamicComponent = shallowRef();
 const isLoading = ref(true)
 
-/* @vite-ignore */
-import('../../components/' + props.componentPath).then(component => {
+import(
+    /* @vite-ignore */
+    '../../components/' + props.componentPath
+).then(component => {
     dynamicComponent.value = component.default
     isLoading.value = false
 }).catch(err => {

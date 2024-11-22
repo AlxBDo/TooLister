@@ -6,7 +6,8 @@ import { useListItemListStore } from '~/stores/listitem/list';
 import type { Liste } from '~/models/liste';
 import ListItemCard from './ListItemCard.vue';
 import ListItemRepository from '~/repositories/ListItem';
-import type { TListTypes } from '~/managers/List';
+import type { TListTypes } from '~/types/list';
+import ListItemFormManager from '~/managers/ListItemForm';
 
 
 const props = defineProps({
@@ -79,6 +80,9 @@ watch(vModel, (value) => {
                     const items = ref<TListItem[]>([])
                     items.value = listItemsResult.items.value.reduce((listItems: TListItem[], listItem: TListItem) => {
                         if (!listItems?.find((item: TListItem) => item?.name === listItem.name)) {
+                            if (listItem.list !== props.list['@id']) {
+                                listItem = { name: listItem.name, '@id': undefined, id: undefined, list: props.list['@id'] }
+                            }
                             if (searched === listItem.name?.toLowerCase()) {
                                 perfectMatch.value = listItem
                             }
@@ -87,7 +91,6 @@ watch(vModel, (value) => {
                         return listItems
                     }, [])
                     listItemsStore.setData({ ...listItemsResult, items })
-                    useConsole().log('ListItemSearch', [items, listItemsResult])
                 }
             })
         }, 650)
@@ -104,7 +107,8 @@ async function save(item: TListItem) {
     if (saving.value) { return }
 
     saving.value = true
-    const listItem = { ...item, status: 1 }
+    const listType = (props.list.type ?? '0') as TListTypes
+    const listItem = { ...ListItemFormManager.submiDataFormater(item, listType), status: 1 }
     perfectMatch.value = listItem
     listItemsStore.setItems([listItem])
 
@@ -125,6 +129,7 @@ async function save(item: TListItem) {
         perfectMatch.value = undefined
         saving.value = false
         vModel.value = null
+        display.value = false
     } catch (e) {
         useConsole().log('Error saving item', [e])
     }

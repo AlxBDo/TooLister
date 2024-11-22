@@ -5,7 +5,7 @@ import Select from './Select.vue';
 import useInput from '~/composables/useInput';
 
 
-defineProps({
+const props = defineProps({
     ...useInput().FORM_GROUP_PROPS,
     ...useInput().SELECT_COMPONENT_PROPS
 })
@@ -29,7 +29,7 @@ const update = (input: TInput): void => {
 
 <template>
     <UFormGroup :class="htmlClass?.group" eager-validation :description :help :hint :label :name :required :size>
-        <component v-if="type" :is="getInputComponent(type)" :class="htmlClass?.input" :color :disabled :icon :id
-            :loading :name :options :placeholder :type :ui :value :variant @update-input="update" />
+        <component v-if="type" :is="getInputComponent(type)" :class="htmlClass?.input" v-bind="props"
+            @update-input="update" />
     </UFormGroup>
 </template>

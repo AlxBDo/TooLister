@@ -1,13 +1,7 @@
 import type { Liste } from "~/models/liste";
 import type { StateTree } from "pinia";
+import type { TList, TListTypesMap } from "~/types/list";
 import ItemManager from "./Item";
-
-
-type TList = Omit<Liste, '@id' | 'id' | 'name' | 'type'> & { id?: number, name?: string, type?: string }
-
-export type TListTypes = "0" | "1" | "2" | "3" | "4" | "5"
-
-export type TListTypesMap = Record<TListTypes, string>;
 
 
 export default class ListManager {

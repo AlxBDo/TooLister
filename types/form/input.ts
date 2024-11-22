@@ -48,7 +48,7 @@ export interface ISelect extends IInputWithOptions {
     debounce?: number;
     loadingIcon?: string;
     query?: string;
-    searchable?: TSearchableProps;
+    searchable?: any;
     searchAttributes?: string[];
 }
 

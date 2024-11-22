@@ -82,6 +82,16 @@ export default class InputManager {
         return Object.keys(options).map(key => ({ id: key, label: capitalize(options[key]) }))
     }
 
+    static createOptionsFromItems(
+        items: IAnyObject[],
+        { id = 'id', label = 'name', callback }: { id?: string, label?: string, callback?: Function }
+    ): IOption[] {
+        return items.map((item: IAnyObject) => {
+            callback && callback(item)
+            return { id: item[id], label: capitalize(item[label]) }
+        })
+    }
+
     static createOptionsInputProperties(input: TStdInput): TInputWithOptions {
         const inputProperties = this.createInputProperties(input)
 
@@ -132,8 +142,17 @@ export default class InputManager {
             ...this.PROPERTIES,
             ...mappedProperties,
             name,
-            value: item[name] ?? undefined
+            value: this.getInputValueFromItemProperty(item[name] ?? undefined)
         }
+    }
+
+    private static getInputValueFromItemProperty(itemPropertyValue: any): TInputValue {
+        if (typeof itemPropertyValue === 'object') {
+            if (itemPropertyValue['@type'] === 'Category') {
+                return itemPropertyValue.name
+            }
+        }
+        return itemPropertyValue
     }
 
     private static populateInputProperties(input: TStdInput, stdInputProperties: TStdInput): TStdInput {

@@ -1,7 +1,6 @@
-import { number, string } from "yup";
+import { lazy, mixed, number, string } from "yup";
 import { stringMinLength, validationMessage, varcharMaxLength } from ".";
 
-const categoryMaxValue = 999;
 const categoryMinValue = 0;
 
 const nameMaxLength = 100;
@@ -9,9 +8,12 @@ const nameMaxLength = 100;
 const urlMinLength = 12;
 
 
-export const categoryValidation = number()
-    .min(categoryMinValue, validationMessage("La catégorie", "min", categoryMinValue))
-    .max(categoryMaxValue, validationMessage("La catégorie", "max", categoryMaxValue))
+export const categoryValidation = lazy(
+    (value) => typeof value === "string"
+        ? string().max(60, validationMessage("La catégorie", "maxLength", 60))
+            .min(stringMinLength, validationMessage("La catégorie", "minLength", stringMinLength))
+        : number().min(categoryMinValue, validationMessage("La catégorie", "min", categoryMinValue))
+)
 
 export const descriptionValidation = string()
     .max(varcharMaxLength, validationMessage("La description", "maxLength", varcharMaxLength))

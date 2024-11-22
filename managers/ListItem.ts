@@ -4,7 +4,8 @@ import type { ShoppingItem } from "~/models/shoppingitem";
 import type { TaskItem } from "~/models/taskitem";
 import type { TListItem } from "./ListItemForm";
 import ItemManager from "./Item";
-import ListManager, { type TListTypes } from "./List";
+import ListManager from "./List";
+import type { TListTypes } from "~/types/list";
 
 
 export default class ListItemManager {

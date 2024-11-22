@@ -1,4 +1,5 @@
-import type { IAnyObject } from "~/types";
+import type { IAnyObject, ISearchParamObject } from "~/types";
+
 
 type TConditionFunction = (item: IAnyObject) => boolean
 
@@ -7,6 +8,7 @@ export interface IValueLabelObject {
     label: string;
     value: string;
 }
+
 
 export function arrayObjectGroupBy(arrayOfObject: IAnyObject[], groupByKey: string): IAnyObject {
     return arrayOfObject.reduce((acc: IAnyObject, curr: IAnyObject) => {
@@ -17,6 +19,10 @@ export function arrayObjectGroupBy(arrayOfObject: IAnyObject[], groupByKey: stri
         }
         return acc
     }, {})
+}
+
+export function arrayObjectFindBy<T extends IAnyObject>(arrayOfObject: T[], findBy: ISearchParamObject & Partial<T>): T | undefined {
+    return arrayOfObject.find((item: T) => Object.keys(findBy).every((key: string) => item[key] === findBy[key]));
 }
 
 export function mapValueLabelObjects(values: string[], labels: IAnyObject, icons?: IAnyObject): IValueLabelObject[] {

@@ -1,23 +1,62 @@
 <script setup lang="ts">
-import type { TInput, ISelect } from '~/types/form/input';
+import type { string } from 'yup';
+import type { FetchAllData } from '~/models/api';
+import type { Category } from '~/models/category';
+import type { TInput, ISelect, IOption } from '~/types/form/input';
 
 
 const props = defineProps({ ...useInput().SELECT_COMPONENT_PROPS })
 
+useConsole().log('Select.vue', [props])
+
 const input = useInput()
 
+if (props.options) {
+    input.setOptions(props.options)
+}
+
 if (props.value) { input.setVModel(props.value) }
+
+const options = input.options
+
+const searchable = props.searchable && searchFunc
 
 const vModel: Ref<any> = input.vModel
 
 const updateEmit = defineEmits<{
-    (e: "updateInput", data: TInput): void
+    (e: "updateInput", data: ISelect): void
 }>();
 
-const update = (): void => {
+async function searchFunc(search: string) {
+    input.loading.value = true
+
+    const searchOption = { id: search, label: search }
+    input.setVModel(search)
+
+    const result = await searchPromise(search)
+
+    useConsole().log('Select.vue searchFunc', [result])
+    //if (result.length) { input.setOptions(result) }
+    input.loading.value = false
+
+    return result.length ? result : [searchOption]
+}
+
+async function searchPromise(search: string): Promise<IOption[]> {
+    return new Promise<IOption[]>((resolve, reject) => {
+        if (props.searchable) {
+            resolve(props.searchable(search, input.setVModel))
+        } else {
+            reject()
+        }
+    })
+}
+
+function update(): void {
+    useConsole().log('Select.vue update', [vModel.value])
     vModel.value && updateEmit('updateInput', {
         ...props as ISelect,
-        value: vModel.value.id
+        value: vModel.value.id ?? vModel.value
     })
 }
 
@@ -26,7 +65,7 @@ watch(() => vModel.value, update)
 </script>
 
 <template>
-    <USelectMenu :class="htmlClass?.input" :clear-search-on-close :color :creatable :debounce :disabled :icon :id
-        :loading :loading-icon :option-attribute :options :multiple :placeholder :query :search-attributes :searchable
-        :select-class :selected-icon :type :ui :value-attribute :variant v-model="vModel" />
+    <USelectMenu :class="htmlClass?.input" :clear-search-on-close="false" :color :creatable :debounce :disabled :icon
+        :id :loading :loading-icon :option-attribute :options="options" :multiple :placeholder :query :search-attributes
+        :searchable="searchable" :select-class :selected-icon :type :ui :value-attribute :variant v-model="vModel" />
 </template>

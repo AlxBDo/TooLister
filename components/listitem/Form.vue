@@ -6,7 +6,7 @@ import ListItemManager from '~/managers/ListItem';
 import ListItemRepository from '~/repositories/ListItem';
 import type { IAnyObject } from '~/types';
 import type { PropType } from 'vue'
-import type { TListTypes } from '~/managers/List';
+import type { TListTypes } from '~/types/list';
 
 const listitemProps = defineProps({
     listItem: { type: Object as PropType<TListItem>, required: true },

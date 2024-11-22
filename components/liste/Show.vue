@@ -4,7 +4,7 @@ import ListItemManager from "~/managers/ListItem";
 import ListItemCard from "../listitem/ListItemCard.vue";
 import type { PropType } from "vue";
 import type { TListItem } from "~/managers/ListItemForm";
-import type { TListTypes } from "~/managers/List";
+import type { TListTypes } from "~/types/list";
 
 defineProps({
     editItemFunction: { type: Function, required: true },
@@ -25,14 +25,14 @@ function removeItem(item: TListItem) {
 <template>
     <main>
         <h2 class="text-lg text-center -mt-8">{{ list?.name }}</h2>
-        <div v-if="list?.selectedItems" class="mt-6 mb-14">
+        <div v-if="list?.selectedItems?.length" class="mt-6 mb-14">
             <ListItemCard v-for="listItem in list.selectedItems" :edit-function="() => editItemFunction(listItem)"
                 :is-loading="pendingItem === listItem?.id" :item="listItem"
                 :list-type="ListItemManager.getItemType((list.type ?? '0') as TListTypes)" :key="listItem.id"
                 :remove-item-btn @remove-item="removeItem">
             </ListItemCard>
         </div>
-        <div v-else>
+        <div v-else class="mt-6 mb-14">
             Aucun élément sélectionné
         </div>
     </main>

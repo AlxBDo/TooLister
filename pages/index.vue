@@ -9,6 +9,7 @@ import ListFormManager from '~/managers/ListForm';
 import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
 
+
 const componentPath = 'liste/Listes.vue'
 
 const firstname = computed(() => useConnectedUser()?.user?.firstname);

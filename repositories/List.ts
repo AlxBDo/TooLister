@@ -8,7 +8,7 @@ class ListRepository extends ItemRepository {
     private _ressource: string = 'listes'
 
     async insert(list: Liste) {
-        return await this.insertItem<Liste>(ListManager.create(list), this._ressource)
+        return await this.insertItem<Liste>(ListManager.create(list) as Liste, this._ressource)
     }
 
     async update(newList: Liste, oldList: Liste) {

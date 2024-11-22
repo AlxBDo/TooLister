@@ -5,12 +5,13 @@ import type { Liste } from "~/models/liste";
 import type { TListItem } from "~/managers/ListItemForm";
 import Form from "~/components/listitem/Form.vue";
 import type { ListItem } from "~/models/listitem";
-import type { TListTypes } from "~/managers/List";
+import type { TListTypes } from "~/types/list";
 import { useListeStore } from "~/stores/liste";
 import { useListeListStore } from "~/stores/liste/list";
 import BallsSpinner from "~/components/common/BallsSpinner.vue";
 import Show from "~/components/liste/Show.vue";
 import ListItemSearch from "~/components/listitem/ListItemSearch.vue";
+import CategoryManager from "~/managers/Category";
 
 
 const route = useRoute()
@@ -81,6 +82,14 @@ function updateListItems(listItem: TListItem) {
   if (list.value) {
     const listStore = useListeStore()
     listStore.setData(list.value)
+
+    if (listItem.category) {
+      if (typeof listItem.category === 'string') {
+        listItem.category = CategoryManager.populateCategory({ '@id': listItem.category })
+      } else if (typeof listItem.category === 'object' && (!listItem.category.id || !listItem.category.name)) {
+        listItem.category = { ...CategoryManager.populateCategory(listItem.category), ...listItem.category }
+      }
+    }
 
     let items = [] as TListItem[]
     if (list.value.selectedItems) { items = list.value.selectedItems }

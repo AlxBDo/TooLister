@@ -34,15 +34,17 @@ function deleteFunction(item: TListItem) {
     <ItemCard :card-size :edit-function :is-loading :item="(item as IItem)" :remove-item-btn :type="listType"
         @remove-item="deleteFunction">
         <template v-if="displaySlot" #right>
-            <div class="w-14 flex-none mr-4 self-center">{{ item?.category ?? null }}</div>
+            <div class="w-14 flex-none mr-4 self-center">{{ item?.category?.name ?? null }}</div>
+        </template>
+        <template v-if="displaySlot" #main>
+            <p v-if="item?.quantity" class="text-sm text-slate-400">
+                <span class="text-xs text-slate-500">Qté : </span>{{ item.quantity }}
+                <span v-if="item?.quantityUnit">{{ item.quantityUnit }}</span>
+            </p>
         </template>
         <template v-if="displaySlot" #bottom-center>
             <div class="flex justify-between flex-wrap text-sm text-slate-300">
                 <p v-if="item?.description">{{ item.description }}</p>
-                <p v-if="item?.quantity">
-                    <span class="text-xs text-slate-500">Qté : </span>{{ item.quantity }}
-                    <span v-if="item?.quantityUnit">{{ item.quantityUnit }}</span>
-                </p>
                 <p v-if="item?.url">{{ item.url }}</p>
             </div>
         </template>

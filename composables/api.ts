@@ -190,7 +190,7 @@ export async function useDeleteItem(item: Item) {
     };
   }
 
-  const { pending } = await useApi(item["@id"] ?? "", { method: "DELETE" });
+  const { pending } = await useApi(item["@id"], { method: "DELETE" });
 
   return {
     isLoading: pending,

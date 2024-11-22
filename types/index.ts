@@ -1,10 +1,15 @@
 import type { Item } from "~/models/item";
+import type { TInputValue } from "./form/input";
 
 export interface IAnyObject { [key: string]: any };
 
 export interface IFunctionObject { [key: string]: Function };
 
+export interface ISearchParams extends Partial<Item>, IAnyObject { }
+
 export interface IStringObject { [key: string]: string };
+
+export interface ISearchParamObject { [key: string]: boolean | number | string }
 
 export interface IObjectStringObject { [key: string]: IStringObject };
 

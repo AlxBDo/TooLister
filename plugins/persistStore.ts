@@ -4,7 +4,7 @@ import { areIdentical } from "~/utils/validation/object";
 import CRYPT from "~/utils/Crypt";
 
 
-const logStyleOptions = { bgColor: 'black', icon: '🎈' }
+const logStyleOptions = { bgColor: 'black', icon: '☁️' }
 
 
 const cryptState = (state: StateTree, Crypt: CRYPT, decrypt: boolean = false): StateTree => {
@@ -33,7 +33,7 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
         persistedState = cryptState(persistedState, Crypt, true)
     }
 
-    /*
+    /**
     useConsole().log(
         'persistStore persist',
         [
@@ -47,6 +47,7 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
         logStyleOptions
     )
     */
+
 
     if (!state || (store.stateIsEmpty && store.stateIsEmpty(state))) {
         persistedState && store.$patch(persistedState)
