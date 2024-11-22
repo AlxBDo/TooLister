@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type { string } from 'yup';
-import type { FetchAllData } from '~/models/api';
-import type { Category } from '~/models/category';
-import type { TInput, ISelect, IOption } from '~/types/form/input';
+import type { ISelect, IOption } from '~/types/form/input';
 
 
 const props = defineProps({ ...useInput().SELECT_COMPONENT_PROPS })
-
-useConsole().log('Select.vue', [props])
 
 const input = useInput()
 
@@ -35,7 +30,6 @@ async function searchFunc(search: string) {
 
     const result = await searchPromise(search)
 
-    useConsole().log('Select.vue searchFunc', [result])
     //if (result.length) { input.setOptions(result) }
     input.loading.value = false
 
@@ -53,7 +47,6 @@ async function searchPromise(search: string): Promise<IOption[]> {
 }
 
 function update(): void {
-    useConsole().log('Select.vue update', [vModel.value])
     vModel.value && updateEmit('updateInput', {
         ...props as ISelect,
         value: vModel.value.id ?? vModel.value

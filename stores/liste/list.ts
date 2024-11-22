@@ -45,56 +45,6 @@ export const useListeListStore = defineStore("listeList", {
       this.pendings = this.pendings?.filter((pending) => pending !== id);
     },
 
-    setData({ items, view, isLoading, error, hubUrl }: FetchAllData<Liste>) {
-      this.setItems(items.value);
-      this.setLoading(isLoading.value);
-      if (hubUrl) this.setHubUrl(hubUrl.value);
-      if (view) this.setView(view.value);
-
-      if (error.value instanceof Error) {
-        this.setError(error.value?.message);
-      }
-    },
-
-    setLoading(isLoading: boolean) {
-      this.isLoading = isLoading;
-    },
-
-    setItems(items: Liste[]) {
-      this.items = items;
-    },
-
-    setHubUrl(hubUrl?: URL) {
-      this.hubUrl = hubUrl;
-    },
-
-    setView(view?: View) {
-      this.view = view;
-    },
-
-    setError(error?: string) {
-      this.error = error;
-    },
-
-    stateIsEmpty: itemsAreEmpty,
-
-    updateItem(updatedItem: Liste) {
-      const item: Liste | undefined = this.items.find(
-        (i) => i["@id"] === updatedItem["@id"] || (!i["@id"] && i.name === updatedItem.name)
-      );
-
-      if (!item) {
-        this.items.push(updatedItem)
-        return
-      }
-
-      Object.assign(item, updatedItem)
-    },
-
-    deleteItem(deletedItem: Liste) {
-      this.items = this.items.filter((item) => {
-        return item["@id"] !== deletedItem["@id"];
-      });
-    },
+    stateIsEmpty: itemsAreEmpty
   },
 });

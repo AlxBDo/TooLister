@@ -23,7 +23,6 @@ class CategoryRepository extends ItemRepository {
      * @returns 
      */
     async getCategories(params?: ISearchCategoriesParams) {
-        useConsole().log('CategoryRepository getCategories')
         return await this.getItems<Category>(this.endpoint, params as IStringObject)
     }
 
