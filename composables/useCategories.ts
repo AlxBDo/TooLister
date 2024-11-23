@@ -21,7 +21,7 @@ export default function useCategories() {
     }
 
     function getCategory(searchBy: IGetCategoryParams) {
-        return arrayObjectFindBy<Category>(items.value, searchBy)
+        return categoryList.getItem<Category>(searchBy) //arrayObjectFindBy<Category>(items.value, searchBy)
     }
 
     return { categories: items, getCategory, isLoading }

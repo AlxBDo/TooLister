@@ -21,6 +21,10 @@ export function arrayObjectGroupBy(arrayOfObject: IAnyObject[], groupByKey: stri
     }, {})
 }
 
+export function arrayObjectFindAllBy<T extends IAnyObject>(arrayOfObject: T[], findBy: ISearchParamObject & Partial<T>): T[] {
+    return arrayOfObject.filter((item: T) => Object.keys(findBy).every((key: string) => item[key] === findBy[key]));
+}
+
 export function arrayObjectFindBy<T extends IAnyObject>(arrayOfObject: T[], findBy: ISearchParamObject & Partial<T>): T | undefined {
     return arrayOfObject.find((item: T) => Object.keys(findBy).every((key: string) => item[key] === findBy[key]));
 }

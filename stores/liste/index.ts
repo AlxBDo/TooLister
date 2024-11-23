@@ -1,9 +1,6 @@
 import { defineStore } from "pinia";
 import type { Liste } from "~/models/liste";
-import type { FetchAllData } from "~/models/api";
 import type { TListItem } from "~/managers/ListItemForm";
-import { updateArrayOfObject } from "~/utils/object";
-import ListItemManager from "~/managers/ListItem";
 import { removeItem, updateItems } from "~/utils/items";
 
 export const useListeStore = defineStore("liste", {

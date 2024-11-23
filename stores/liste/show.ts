@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Liste } from "~/models/liste";
-import { FetchItemData } from "~/models/api";
+import type { FetchItemData } from "~/models/api";
 interface State {
   retrieved?: Liste;
   isLoading: boolean;

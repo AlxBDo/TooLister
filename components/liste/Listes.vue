@@ -35,7 +35,7 @@ function goToList(listId: number) {
 
 async function removeItem(list: Liste) {
     if (list.id) {
-        listeListStore.removeItem(list.id)
+        listeListStore.deleteItem(list)
         await useDeleteItem(list)
     }
 }

@@ -1,28 +1,24 @@
 import { defineStore } from 'pinia';
+import { itemState, persistedState } from '~/utils/store';
 import type { User } from "~~/models/user";
+import type { IPersistedState } from '~/types/store';
 
-interface State extends User {
-    isEncrypted: boolean;
-    persist: boolean;
-    persistedPropertiesToEncrypt: string[];
-}
+interface State extends User, IPersistedState { }
 
 export const useUserStore = defineStore('user', {
     state: (): State => ({
-        '@id': undefined,
-        id: undefined,
+        ...persistedState(false, ['email', 'password', 'username'], false),
+        ...itemState,
         email: undefined,
         firstname: undefined,
-        isEncrypted: false,
         listes: undefined,
         password: undefined,
-        persist: false,
-        persistedPropertiesToEncrypt: ['email', 'password', 'username'],
         roles: undefined,
         salt: undefined,
         userIdentifier: undefined,
         username: undefined
     }),
+
     actions: {
         clearUser() {
             this['@id'] = undefined;
@@ -37,12 +33,15 @@ export const useUserStore = defineStore('user', {
             this.userIdentifier = undefined;
             this.username = undefined;
         },
+
         persistStore() {
             this.persist = true;
         },
+
         stateIsEmpty() {
             return !this.id
         },
+
         updateUser(user: User) {
             if (user['@id']) { this['@id'] = user['@id']; }
             if (user.id) { this.id = user.id; }
