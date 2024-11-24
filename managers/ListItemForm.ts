@@ -8,10 +8,10 @@ import type { TListTypes } from "~/types/list";
 
 import CategoryManager from "./Category";
 import { categoryValidation, descriptionValidation, nameValidation, urlValidation } from "~/utils/validation/listItem";
+import { DURATION_TYPES, PRIORITIES, QUANTITY_UNITS } from "~/models/listitem";
 import InputManager from "./Input";
-import ListItemManager from "./ListItem";
-import ListManager from "./List";
 import { priceValidation, quantityUnitValidation, quantityValidation } from "~/utils/validation/shoppingItem";
+import { TYPE_GIFT } from "~/models/liste";
 
 
 export type TListItem = GiftItem | ListItem | ShoppingItem | TaskItem;
@@ -62,7 +62,7 @@ export default class ListItemFormManager {
             { placeholder: 'Qté', type: 'number', validator: quantityValidation } as IStdInput
         ),
         quantityUnit: InputManager.createSelectProperties(
-            { placeholder: "Unité", options: InputManager.createOptions(ListItemManager.QUANTITY_UNITS), type: 'select', validator: quantityUnitValidation } as ISelect
+            { placeholder: "Unité", options: InputManager.createOptions(QUANTITY_UNITS), type: 'select', validator: quantityUnitValidation } as ISelect
         ),
         dueDate: InputManager.createInputProperties(
             { placeholder: 'Echéance', type: 'date' } as IStdInput
@@ -71,10 +71,10 @@ export default class ListItemFormManager {
             { placeholder: 'Durée', type: 'number' } as IStdInput
         ),
         durationType: InputManager.createSelectProperties(
-            { placeholder: "Choisir", options: InputManager.createOptions(ListItemManager.DURATION_TYPES), type: 'select' } as ISelect
+            { placeholder: "Choisir", options: InputManager.createOptions(DURATION_TYPES), type: 'select' } as ISelect
         ),
         priority: InputManager.createSelectProperties(
-            { placeholder: "Priorité", options: InputManager.createOptions(ListItemManager.PRIORITIES), type: 'select' } as ISelect
+            { placeholder: "Priorité", options: InputManager.createOptions(PRIORITIES), type: 'select' } as ISelect
         ),
         startDate: InputManager.createInputProperties(
             { placeholder: 'Date', type: 'date' } as IStdInput
@@ -99,7 +99,7 @@ export default class ListItemFormManager {
             }
         })
 
-        if (listType === ListManager.TYPE_GIFT) {
+        if (listType === TYPE_GIFT) {
             if (item.buyers) { delete item.buyers }
         }
 

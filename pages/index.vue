@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AsyncComponent from '~/components/common/AsyncComponent.vue'
+import listFactory from '~/factories/List';
 import ModalForm from '~/components/form/ModalForm.vue';
 import type { Liste } from '~/models/liste';
 import type { Ref } from 'vue';
@@ -20,7 +21,7 @@ const listeListStore = useListeListStore();
 
 const modalIsOpen = ref<boolean>(false)
 
-const newList = ListManager.create()
+const newList = listFactory.create()
 
 const preForm: TModalForm<Liste> = {
   id: formId,

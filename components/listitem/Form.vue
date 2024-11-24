@@ -2,7 +2,7 @@
 import Form from '../form/index.vue'
 import ListItemFormManager from '~/managers/ListItemForm'
 import type { TListItem } from '~/managers/ListItemForm'
-import ListItemManager from '~/managers/ListItem';
+import ListItemFactory from '~/factories/ListItem';
 import ListItemRepository from '~/repositories/ListItem';
 import type { IAnyObject } from '~/types';
 import type { PropType } from 'vue'
@@ -18,7 +18,7 @@ const htmlClass: IAnyObject = {
     form: "p-6"
 }
 
-const listItem = ListItemManager.create(listitemProps.listItem, listitemProps.listType)
+const listItem = ListItemFactory.create(listitemProps.listType, listitemProps.listItem)
 
 const inputs = ref(
     ListItemFormManager.createItemInputs(

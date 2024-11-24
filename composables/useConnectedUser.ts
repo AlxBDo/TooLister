@@ -15,7 +15,7 @@ export default () => {
             // Remember Me
             const password = state.password
             const username = state.username
-            useConsole().log('useConnectedUser rememberMe', [auth.status.value])
+
             if (password && username && !isPending.value && auth.status.value !== 'authenticated') {
                 login({ password, username })
             }

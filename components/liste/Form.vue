@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Form from '../form/index.vue'
+import listFactory from '~/factories/List';
 import ListFormManager from '~/managers/ListForm';
-import ListManager from '~/managers/List';
 import ListRepository from '~/repositories/List';
 import type { IAnyObject } from '~/types';
 import type { Liste } from '~/models/liste';
@@ -22,7 +22,7 @@ const htmlClass: IAnyObject = {
     form: "p-6"
 }
 
-const list = ListManager.create(props.item)
+const list = listFactory.create(props.item)
 
 const inputs = ref(
     ListFormManager.createInputs(list)

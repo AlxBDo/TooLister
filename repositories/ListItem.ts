@@ -1,14 +1,15 @@
+import ItemRepository from "./Item";
+import ListItemFactory from "~/factories/ListItem";
 import ListItemManager from "~/managers/ListItem";
 import type { TListItem } from "~/managers/ListItemForm";
 import type { TListTypes } from "~/types/list";
-import ItemRepository from "./Item";
 
 
 class ListItemRepository extends ItemRepository {
 
     async insert(listItem: TListItem, listType: TListTypes) {
         return await this.insertItem<TListItem>(
-            ListItemManager.create(listItem, listType),
+            ListItemFactory.create(listType, listItem),
             ListItemManager.getItemRessource(listType)
         )
     }

@@ -3,13 +3,20 @@ import type { Category } from "~/models/category";
 import type { ISearchParams, IStringObject } from "~/types";
 import type { TListTypes } from "~/types/list";
 
-interface ISearchCategoryParams extends ISearchParams, Partial<Category> {
-    name?: string;
-}
 
-interface ISearchCategoriesParams extends ISearchCategoryParams {
+interface ISearchCategoryParams extends ISearchParams, Partial<TCategoryCriteria> {
+    name?: string;
     listType?: TListTypes;
 }
+
+interface ISearchCategoriesParams extends TCategoriesCriteria {
+    listType?: TListTypes[];
+}
+
+
+type TCategoryCriteria = Omit<Category, 'listType'>
+
+type TCategoriesCriteria = Omit<ISearchCategoryParams, 'listType'>
 
 
 class CategoryRepository extends ItemRepository {
@@ -30,7 +37,7 @@ class CategoryRepository extends ItemRepository {
         return await this.getItemById<Category>(id, this.endpoint)
     }
 
-    async getCategoryByListType(listType: TListTypes) {
+    async getCategoryByListType(listType: TListTypes[]) {
         return await this.getCategories({ listType })
     }
 
