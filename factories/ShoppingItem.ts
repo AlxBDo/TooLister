@@ -11,6 +11,6 @@ export default class ShoppingItemFactory extends STDListItemFactory {
 
     constructor() {
         super()
-        this.setItem(this.SHOPPING_ITEM)
+        this.setModel(this.SHOPPING_ITEM)
     }
 }

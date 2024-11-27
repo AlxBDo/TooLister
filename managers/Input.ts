@@ -119,8 +119,9 @@ export default class InputManager {
     }
 
     static createInputs(item: IAnyObject, mappedProperties: IAnyObject, propertiesSorted: string[], excludedProperties: string[] = []): TInput[] {
+        excludedProperties?.push('id')
+
         const inputs = Object.keys(item).reduce((acc: any, curr: string) => {
-            excludedProperties?.push('id')
             if (excludedProperties.includes(curr)) { return acc }
 
             const input: TStdInput = this.getInputProperties(curr, item, mappedProperties[curr])

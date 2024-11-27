@@ -1,12 +1,11 @@
 import type { IItem } from "~/types"
+import { Factory } from "./Factory"
 
 
 export type TItem = Omit<IItem, 'id' | 'name'> & { id?: number, name?: string }
 
 
-export default class ItemFactory {
-    private _item: TItem = {}
-
+export default class ItemFactory extends Factory<TItem> {
     readonly STD_ITEM: TItem = {
         '@id': undefined,
         id: undefined,
@@ -14,23 +13,7 @@ export default class ItemFactory {
     }
 
     constructor() {
-        this.setItem(this.STD_ITEM)
-    }
-
-    create<T extends TItem>(item?: T): T {
-        return this.populateItem({ ...this._item, ...item }) as T
-    }
-
-    /**
-     * Rewrite this method to make specific process on item creation
-     * @param item 
-     * @returns 
-     */
-    protected populateItem(item: TItem): TItem {
-        return item
-    }
-
-    protected setItem<T extends TItem>(item: T): void {
-        this._item = item
+        super()
+        this.setModel(this.STD_ITEM)
     }
 }

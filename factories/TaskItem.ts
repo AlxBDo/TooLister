@@ -13,6 +13,6 @@ export default class TaskItemFactory extends STDListItemFactory {
 
     constructor() {
         super()
-        this.setItem(this.TASK_ITEM)
+        this.setModel(this.TASK_ITEM)
     }
 }

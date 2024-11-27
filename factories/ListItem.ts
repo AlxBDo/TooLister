@@ -27,6 +27,6 @@ export default class ListItemFactory {
             default:
                 throw new Error(`Invalid list item type: ${listType}`);
         }
-        return factory.create(listItem);
+        return factory.create(listItem) as T;
     }
 }

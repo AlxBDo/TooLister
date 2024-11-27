@@ -11,14 +11,14 @@ class ListFactory extends ItemFactory {
 
     constructor() {
         super();
-        this.setItem(this.LIST);
+        this.setModel(this.LIST);
     }
 
-    protected override populateItem(list: TList) {
-        const owner = list?.owner ?? `apip/users/${useConnectedUser().user.id}`
-        return {
-            ...list,
-            owner
+    protected override getPropertyValueFromItem(propertyName: keyof TList, item: Partial<TList>) {
+        if (propertyName === 'owner') {
+            return item?.owner ?? `apip/users/${useConnectedUser().user.id}`
+        } else {
+            return item[propertyName]
         }
     }
 }

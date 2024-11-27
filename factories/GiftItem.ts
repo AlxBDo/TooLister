@@ -10,6 +10,6 @@ export default class GiftItemFactory extends ShoppingItemFactory {
 
     constructor() {
         super()
-        this.setItem(this.GIFT_ITEM)
+        this.setModel(this.GIFT_ITEM)
     }
 }

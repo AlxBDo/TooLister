@@ -7,12 +7,13 @@ export default class STDListItemFactory extends ItemFactory {
         ...this.STD_ITEM,
         category: undefined,
         description: undefined,
+        list: undefined,
         status: 1,
         url: undefined,
     }
 
     constructor() {
-        super();
-        this.setItem(this.LIST_ITEM);
+        super()
+        this.setModel(this.LIST_ITEM)
     }
 }

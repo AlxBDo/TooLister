@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const username = computed(() => useConnectedUser().user?.username)
+const firstname = computed(() => useConnectedUser().user?.firstname)
 </script>
 
 <template>
     <main>
-        <section v-if="username" id="connected">
-            <h1>Bienvenue {{ username }}</h1>
+        <section v-if="firstname" id="connected">
+            <h1>Bienvenue {{ firstname }}</h1>
             <p>Connexion en cours...</p>
         </section>
         <section v-else id="not-connected">
