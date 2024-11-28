@@ -1,12 +1,6 @@
-import type { IInput, IInputWithOptions, ISelect } from "~/types/form/input";
 import { Factory } from "./Factory";
+import type { TStdInput } from "~/types/factory";
 
-
-export type TStdInput = Omit<IInput, 'name' | 'type'> & { name?: string; type?: string };
-
-export type TInputWithOptions = Omit<IInputWithOptions, 'name' | 'type'> & { name?: string; type?: string };
-
-export type TSelect = Omit<ISelect, 'name' | 'type'> & { name?: string; type?: string }
 
 const logStyle = { bgColor: 'purple', icon: '🌬️' }
 

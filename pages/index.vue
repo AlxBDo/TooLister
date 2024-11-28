@@ -10,8 +10,6 @@ import ListFormManager from '~/managers/ListForm';
 import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
 
-import TestFactory from '~/factories/Test';
-
 
 const componentPath = 'liste/Listes.vue'
 
