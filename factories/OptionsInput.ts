@@ -14,7 +14,7 @@ export default class OptionsInputFactory extends InputFactory {
         optionAttribute: 'label',
         selectClass: undefined,
         selectedIcon: undefined,
-        valueAttribute: 'value'
+        valueAttribute: undefined
     }
 
     constructor() {

@@ -13,6 +13,7 @@ export default class InputFactory extends Factory<TStdInput> {
         disabled: false,
         help: undefined,
         hint: undefined,
+        htmlClass: undefined,
         icon: undefined,
         label: undefined,
         loading: false,

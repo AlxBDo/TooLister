@@ -9,13 +9,10 @@ import ListManager from "~/managers/List";
 
 export default class ListInputsFactory extends InputsFromItem<TList> {
 
-    private readonly PROPERTIES_SORT_MAPPING: Array<keyof TList> = ['name', 'type']
-
-    private readonly INPUT_MAPPING_BY_PROPERTY: IAnyObject = {
-        name: { label: 'Nom', name: 'name', type: 'text', validator: nameValidation } as IStdInput,
+    protected override _inputsDefinition: IAnyObject = {
+        name: { label: 'Nom', type: 'text', validator: nameValidation } as IStdInput,
         type: {
             label: 'Liste de',
-            name: 'type',
             options: this.createTypesSelectOptions(ListManager.TYPE_LABELS),
             placeholder: "course, taches, ...",
             type: 'select',
@@ -23,11 +20,7 @@ export default class ListInputsFactory extends InputsFromItem<TList> {
         } as ISelect
     }
 
-    constructor() {
-        super()
-        this.inputsDefinition = this.INPUT_MAPPING_BY_PROPERTY
-        this.propertiesSorted = this.PROPERTIES_SORT_MAPPING
-    }
+    protected override _sortedProperties?: Array<keyof TList> = ['name', 'type']
 
     private createTypesSelectOptions(options: IAnyObject): IOption[] {
         return Object.keys(options).map(key => ({ id: key, label: capitalize(options[key]) }))

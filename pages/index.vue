@@ -6,9 +6,9 @@ import type { Liste } from '~/models/liste';
 import type { Ref } from 'vue';
 import type { TModalForm } from '~/composables/useModalForm';
 import ListManager from '~/managers/List';
-import ListFormManager from '~/managers/ListForm';
 import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
+import ListInputsFactory from '~/factories/ListInputs';
 
 
 const componentPath = 'liste/Listes.vue'
@@ -23,9 +23,11 @@ const modalIsOpen = ref<boolean>(false)
 
 const newList = listFactory.create()
 
+const listInputsFactory = new ListInputsFactory()
+
 const preForm: TModalForm<Liste> = {
   id: formId,
-  inputs: ListFormManager.createInputs(newList),
+  inputs: listInputsFactory.create(newList),
   isOpen: modalIsOpen,
   item: newList,
   path: 'liste/Form.vue',

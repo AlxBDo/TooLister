@@ -58,13 +58,13 @@ export function removeItemOfObjectCollection(
 
 export function sortArrayObjectFromStringArray<T extends IAnyObject>(
     inputs: T[],
-    propertiesSorted: string[],
+    sortedProperties: string[],
     referenceProperty: keyof T = 'name'
 ): T[] {
     return inputs.sort(
         (a: T, b: T): number => {
             return (a[referenceProperty] && b[referenceProperty])
-                ? propertiesSorted.indexOf(a[referenceProperty]) - propertiesSorted.indexOf(b[referenceProperty])
+                ? sortedProperties.indexOf(a[referenceProperty]) - sortedProperties.indexOf(b[referenceProperty])
                 : 1
         }
     );

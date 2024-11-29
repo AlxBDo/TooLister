@@ -1,10 +1,10 @@
-import type { TInput, TInputType, TInputValue } from "~/types/form/input";
 import type { IAnyObject } from "~/types";
-import { sortArrayObjectFromStringArray } from "~/utils/object";
+import type { TInput, TInputType, TInputValue } from "~/types/form/input";
+import type { TStdInput } from "~/types/factory";
+import InputFactory from "./Input";
 import OptionsInputFactory from "./OptionsInput";
 import SelectFactory from "./Select";
-import InputFactory from "./Input";
-import type { TStdInput } from "~/types/factory";
+import { sortArrayObjectFromStringArray } from "~/utils/object";
 
 
 const logStyle = { bgColor: 'darkblue', icon: '🏭' }
@@ -18,9 +18,9 @@ export default abstract class InputsFactory<T extends IAnyObject> {
 
     }
 
-    private _inputsDefinition?: IAnyObject
+    protected abstract _inputsDefinition: IAnyObject
 
-    private _propertiesSorted?: Array<keyof T>
+    protected abstract _sortedProperties?: Array<keyof T> | Record<string, Array<keyof T>>
 
 
     protected readonly FACTORIES_MAP_BY_TYPE: Record<TInputType, InputFactory | OptionsInputFactory | SelectFactory> = {
@@ -36,7 +36,9 @@ export default abstract class InputsFactory<T extends IAnyObject> {
 
     get inputsDefinition(): IAnyObject | undefined { return this._inputsDefinition }
 
-    get propertiesSorted(): Array<keyof T> | undefined { return this._propertiesSorted }
+    get sortedProperties(): Array<keyof T> | Record<string, Array<keyof T>> | undefined {
+        return this._sortedProperties
+    }
 
 
     set inputsDefinition(inputsDefinition: IAnyObject) {
@@ -45,9 +47,9 @@ export default abstract class InputsFactory<T extends IAnyObject> {
         }
     }
 
-    set propertiesSorted(properties: Array<keyof T>) {
+    set sortedProperties(properties: Array<keyof T>) {
         if (properties.length) {
-            this._propertiesSorted = properties
+            this._sortedProperties = properties
         }
     }
 
@@ -70,8 +72,9 @@ export default abstract class InputsFactory<T extends IAnyObject> {
     }
 
     private createInput(value: any, name: string, inputProperties: TStdInput) {
-        if (!inputProperties.name) { throw new Error('Name type not defined') }
         if (!inputProperties.type) { throw new Error('Input type not defined') }
+
+        if (!inputProperties.name) { inputProperties.name = name }
 
         const inputType = inputProperties.type as TInputType
 
@@ -86,7 +89,7 @@ export default abstract class InputsFactory<T extends IAnyObject> {
     }
 
     /**
-     * Rewrite this method to define specific logic for an input
+     * Rewrite this method to define specific logic for input properties
      * @param {object} properties 
      * @param {string} name 
      * @returns 
@@ -96,7 +99,7 @@ export default abstract class InputsFactory<T extends IAnyObject> {
     }
 
     /**
-     * Rewrite this method to define specific logic for an input
+     * Rewrite this method to define specific logic to get input value
      * @param {object} value 
      * @param {string} name 
      * @returns 
@@ -109,9 +112,15 @@ export default abstract class InputsFactory<T extends IAnyObject> {
         return value?.id
     }
 
+    /**
+     * Rewrite this method to define sort
+     * @param inputs 
+     * @returns 
+     */
     protected sortInputs(inputs: TInput[]): TInput[] {
-        return this._propertiesSorted
-            ? sortArrayObjectFromStringArray<TInput>(inputs, this._propertiesSorted as string[])
+        const sortedProperties = this.sortedProperties
+        return sortedProperties
+            ? sortArrayObjectFromStringArray<TInput>(inputs, sortedProperties as string[])
             : inputs
     }
 }

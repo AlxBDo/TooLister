@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import Form from '../form/index.vue'
-import ListItemFormManager from '~/managers/ListItemForm'
-import type { TListItem } from '~/managers/ListItemForm'
 import ListItemFactory from '~/factories/ListItem';
+import ListItemFormManager from '~/managers/ListItemForm'
+import ListItemInputsFactory from '~/factories/ListItemInputs';
 import ListItemRepository from '~/repositories/ListItem';
 import type { IAnyObject } from '~/types';
 import type { PropType } from 'vue'
+import type { TListItem } from '~/managers/ListItemForm'
 import type { TListTypes } from '~/types/list';
 
 const listitemProps = defineProps({
@@ -20,11 +21,10 @@ const htmlClass: IAnyObject = {
 
 const listItem = ListItemFactory.create(listitemProps.listType, listitemProps.listItem)
 
+const listItemInputsFactory = new ListItemInputsFactory(listitemProps.listType)
+
 const inputs = ref(
-    ListItemFormManager.createItemInputs(
-        listItem,
-        listitemProps.listType
-    )
+    listItemInputsFactory.create(listItem)
 )
 
 async function submit(data: IAnyObject) {
