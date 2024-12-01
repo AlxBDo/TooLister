@@ -33,6 +33,7 @@ const props = defineProps({
     title: { type: String }
 })
 
+
 const form = ref()
 
 const inputs = props.inputs.reduce(

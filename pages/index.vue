@@ -8,28 +8,22 @@ import type { TModalForm } from '~/composables/useModalForm';
 import ListManager from '~/managers/List';
 import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
-import ListInputsFactory from '~/factories/ListInputs';
 
 
 const componentPath = 'liste/Listes.vue'
 
-const firstname = computed(() => useConnectedUser()?.user?.firstname);
+const firstname = computed(() => useConnectedUser()?.user?.firstname)
 
 const formId = 'listeForm'
 
-const listeListStore = useListeListStore();
+const listeListStore = useListeListStore()
 
 const modalIsOpen = ref<boolean>(false)
 
-const newList = listFactory.create()
-
-const listInputsFactory = new ListInputsFactory()
-
 const preForm: TModalForm<Liste> = {
   id: formId,
-  inputs: listInputsFactory.create(newList),
   isOpen: modalIsOpen,
-  item: newList,
+  item: listFactory.create(),
   path: 'liste/Form.vue',
   successCallback: submitFormModal
 }

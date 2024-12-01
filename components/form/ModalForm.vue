@@ -5,7 +5,9 @@ import type { TListItem } from '~/managers/ListItemForm';
 import type { Liste } from '~/models/liste';
 import type { IAnyObject } from '~/types';
 
+
 type TUseModalForm = TListItem | Liste
+
 
 const props = defineProps({
     id: { type: String, required: true }
@@ -20,6 +22,7 @@ const emits = defineEmits<({
 
 
 function closeModal() { emits('close') }
+
 function pendingItem(item: IAnyObject) {
     if (modalForm?.value) {
         modalForm.value.item = item

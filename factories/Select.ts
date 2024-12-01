@@ -1,3 +1,4 @@
+import type { IAnyObject } from "~/types";
 import OptionsInputFactory from "./OptionsInput";
 import type { TSelect } from "~/types/factory";
 
@@ -21,5 +22,14 @@ export default class SelectFactory extends OptionsInputFactory {
     constructor() {
         super()
         this.setModel(this.SELECT_PROPERTIES)
+    }
+
+    protected override getPropertyValueFromItem(propertyName: string, item: IAnyObject) {
+        if (typeof item[propertyName] === 'object') {
+            if (item[propertyName]['@type'] === 'Category') {
+                return item[propertyName].name
+            }
+        }
+        return item[propertyName]
     }
 }

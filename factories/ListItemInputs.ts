@@ -2,7 +2,7 @@ import { DURATION_TYPES, PRIORITIES, QUANTITY_UNITS } from "~/models/listitem";
 import type { TListItem } from "~/managers/ListItemForm";
 import type { TListTypes } from "~/types/list";
 import type { IAnyObject } from "~/types";
-import type { ISelect, IStdInput } from "~/types/form/input";
+import type { ISelect, IStdInput, TInputValue } from "~/types/form/input";
 import InputManager from "~/managers/Input";
 import CategoryManager from "~/managers/Category";
 import { categoryValidation, descriptionValidation, nameValidation, urlValidation } from "~/utils/validation/listItem";
@@ -72,6 +72,14 @@ export default class ListItemInputsFactory extends InputsFromItem<TListItem> {
     constructor(listType: TListTypes) {
         super()
         this.listType = listType
+    }
+
+    protected override getInputValue(value: IAnyObject, name: string): TInputValue {
+        if (name === 'category' && value.name) {
+            return value.name
+        }
+
+        return super.getInputValue(value, name)
     }
 
     override get sortedProperties() {

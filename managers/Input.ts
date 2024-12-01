@@ -21,13 +21,4 @@ export default class InputManager {
             return { id: item[id], label: capitalize(item[label]) }
         })
     }
-
-    private static getInputValueFromItemProperty(itemPropertyValue: any): TInputValue {
-        if (typeof itemPropertyValue === 'object') {
-            if (itemPropertyValue['@type'] === 'Category') {
-                return itemPropertyValue.name
-            }
-        }
-        return itemPropertyValue
-    }
 }
