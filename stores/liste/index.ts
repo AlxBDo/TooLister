@@ -25,6 +25,10 @@ export const useListeStore = defineStore("liste", {
             this.hydrateNewItem(item)
         },
 
+        getListItems(): TListItem[] {
+            return [...this.items ?? [], this.selectedItems ?? [], this.unselectedItems ?? []]
+        },
+
         hydrateNewItem(item: TListItem) {
             if (item.status === 1) {
                 if (!this.selectedItems) { this.selectedItems = [] }

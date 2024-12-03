@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import type { TListItem } from '~/managers/ListItemForm';
-import { useFetchList } from '#imports';
 import { useListItemListStore } from '~/stores/listitem/list';
 import type { Liste } from '~/models/liste';
 import ListItemCard from './ListItemCard.vue';
 import ListItemRepository from '~/repositories/ListItem';
-import type { TListTypes } from '~/types/list';
 import ListItemFormManager from '~/managers/ListItemForm';
+import type { IAnyObject } from '~/types';
 
 
 const props = defineProps({
@@ -45,9 +44,27 @@ const listItems = computed(() => {
     if (props.list.unselectedItems) { items = [...items, ...props.list.unselectedItems] }
 
     const searchedItem = vModel.value.toLowerCase()
+    const itemsByIndex: IAnyObject = {}
     return items.filter(item => {
         const index = item.name?.toLowerCase().indexOf(searchedItem)
-        return index !== undefined && index >= 0 && index < 3
+        if (index !== undefined && index >= 0) {
+            itemsByIndex[item.id ?? 0] = index
+            return true
+        }
+        return false
+    }).sort((a: TListItem, b: TListItem) => {
+        if (!a.name) {
+            return 1
+        }
+        if (!b.name) {
+            return -1
+        }
+
+        if (itemsByIndex[a.id ?? 0] === itemsByIndex[b.id ?? 0]) {
+            return a.name > b.name ? -1 : 1
+        }
+
+        return itemsByIndex[a.id ?? 0] < itemsByIndex[b.id ?? 0] ? -1 : 1
     })
 })
 
@@ -73,7 +90,7 @@ watch(vModel, (value) => {
         }
 
         pendingRequest = setTimeout(() => {
-            useFetchList<TListItem[]>(`list_items?name=${value}`).then((listItemsResult) => {
+            ListItemRepository.getListItems({ name: value }).then((listItemsResult) => {
                 isLoading.value = false
                 if (listItemsResult && listItemsResult.items?.value && !saving.value && vModel.value) {
                     const searched = vModel.value.toLowerCase()
@@ -107,23 +124,18 @@ async function save(item: TListItem) {
     if (saving.value) { return }
 
     saving.value = true
-    const listType = (props.list.type ?? '0') as TListTypes
-    const listItem = { ...ListItemFormManager.submiDataFormater(item, listType), status: 1 }
-    perfectMatch.value = listItem
-    listItemsStore.setItems([listItem])
-
     try {
-        let requestResult: any
-        if (item['@id']) {
-            requestResult = await ListItemRepository.update(listItem, item)
-        } else {
-            requestResult = await ListItemRepository.insert(
-                { ...listItem, list: `/apip/listes/${props.list.id}` },
-                (props.list.type as TListTypes) ?? '0'
-            )
-        }
+        const listItem = { ...item, status: 1 }
+        perfectMatch.value = listItem
+        listItemsStore.setItems([listItem])
 
-        props.clickItem(toRaw(requestResult.value))
+        const requestResult = await ListItemFormManager.save(
+            props.list.type ?? "0",
+            listItem,
+            item['@id'] ? item : undefined
+        )
+
+        requestResult && props.clickItem(toRaw(requestResult.value))
 
         listItemsStore.$reset()
         perfectMatch.value = undefined

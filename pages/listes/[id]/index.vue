@@ -12,6 +12,7 @@ import BallsSpinner from "~/components/common/BallsSpinner.vue";
 import Show from "~/components/liste/Show.vue";
 import ListItemSearch from "~/components/listitem/ListItemSearch.vue";
 import CategoryManager from "~/managers/Category";
+import ListItemFormManager from "~/managers/ListItemForm";
 
 
 const route = useRoute()
@@ -67,7 +68,7 @@ function itemFormToggle(item?: TListItem) {
 function submitFormModal(data: Promise<TListItem>) {
   itemFormToggle()
   data.then(
-    (listItem: TListItem) => updateListItems(listItem?.value)
+    (listItem: TListItem) => list.value && ListItemFormManager.updateStore(list.value, listItem) //updateListItems(listItem?.value)
   )
     .finally(() => {
       if (pendingItem.value > 0) {

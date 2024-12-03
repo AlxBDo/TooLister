@@ -3,7 +3,6 @@ import Form from '../form/index.vue'
 import ListItemFactory from '~/factories/ListItem';
 import ListItemFormManager from '~/managers/ListItemForm'
 import ListItemInputsFactory from '~/factories/ListItemInputs';
-import ListItemRepository from '~/repositories/ListItem';
 import type { IAnyObject } from '~/types';
 import type { PropType } from 'vue'
 import type { TListItem } from '~/managers/ListItemForm'
@@ -33,11 +32,7 @@ async function submit(data: IAnyObject) {
 
     callback && callback()
 
-    data = ListItemFormManager.submiDataFormater(data, listitemProps.listType)
-
-    const dataPromise = listitemProps.listItem.id
-        ? ListItemRepository.update(data, listitemProps.listItem)
-        : ListItemRepository.insert(data, listitemProps.listType)
+    const dataPromise = ListItemFormManager.save(listitemProps.listType, data, listitemProps.listItem)
 
     listitemProps.successCallback && listitemProps.successCallback(dataPromise)
 }

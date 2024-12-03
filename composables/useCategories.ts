@@ -1,5 +1,5 @@
 import type { Category } from "~/models/category";
-import type { ISearchParams } from "~/types";
+import type { ISearchCriterias } from "~/types";
 import CategoryRepository from "~/repositories/Category";
 import { useCategoryListStore } from "~/stores/category/list";
 import { arrayObjectFindBy } from "~/utils/object";
@@ -7,7 +7,7 @@ import { useListeListStore } from "~/stores/liste/list";
 import type { TListTypes } from "~/types/list";
 import type { Liste } from "~/models/liste";
 
-interface IGetCategoryParams extends ISearchParams, Partial<Category> {
+interface IGetCategoryParams extends ISearchCriterias, Partial<Category> {
     name?: string
 }
 

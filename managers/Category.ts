@@ -20,7 +20,7 @@ export default class CategoryManager {
         const categoryToLowerCase = category.toLowerCase()
         const perfetMatch: Ref<boolean> = ref(false)
 
-        function perfetMatchCallback(item: Category) {
+        function perfectMatchCallback(item: Category) {
             if (!item.name) { return }
             if (item.name.toLowerCase() === categoryToLowerCase) {
                 perfetMatch.value = true
@@ -30,6 +30,6 @@ export default class CategoryManager {
 
         const result = await CategoryRepository.getCategories({ name: category })
 
-        return InputManager.createOptionsFromItems(result.items.value, { callback: perfetMatchCallback })
+        return InputManager.createOptionsFromItems(result.items.value, { callback: perfectMatchCallback })
     }
 }

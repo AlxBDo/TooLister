@@ -75,8 +75,8 @@ export default class ListItemInputsFactory extends InputsFromItem<TListItem> {
     }
 
     protected override getInputValue(value: IAnyObject, name: string): TInputValue {
-        if (name === 'category' && value.name) {
-            return value.name
+        if (name === 'category') {
+            return CategoryManager.populateCategory(value).name
         }
 
         return super.getInputValue(value, name)

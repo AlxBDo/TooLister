@@ -1,7 +1,7 @@
 import type { Pinia, PiniaPluginContext } from "pinia"
 import type { FetchAllData } from "~/models/api";
 import type { Item } from "~/models/item";
-import type { IAnyObject, ISearchParamObject, ISearchParams } from "~/types";
+import type { IAnyObject, ISearchParamObject, ISearchCriterias } from "~/types";
 import type { IItemListActions } from "~/types/store";
 import type { View } from "~/types/view";
 import { arrayObjectFindAllBy, arrayObjectFindBy } from "~/utils/object";

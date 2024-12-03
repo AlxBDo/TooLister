@@ -1,10 +1,10 @@
 import ItemRepository from "./Item";
 import type { Category } from "~/models/category";
-import type { ISearchParams, IStringObject } from "~/types";
+import type { ISearchCriterias, IStringObject } from "~/types";
 import type { TListTypes } from "~/types/list";
 
 
-interface ISearchCategoryParams extends ISearchParams, Partial<TCategoryCriteria> {
+interface ISearchCategoryParams extends ISearchCriterias, Partial<TCategoryCriteria> {
     name?: string;
     listType?: TListTypes;
 }
