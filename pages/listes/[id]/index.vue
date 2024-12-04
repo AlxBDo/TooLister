@@ -67,8 +67,9 @@ function itemFormToggle(item?: TListItem) {
 
 function submitFormModal(data: Promise<TListItem>) {
   itemFormToggle()
+
   data.then(
-    (listItem: TListItem) => list.value && ListItemFormManager.updateStore(list.value, listItem) //updateListItems(listItem?.value)
+    (listItem: TListItem) => list.value && ListItemFormManager.updateStore(list.value, listItem.value)
   )
     .finally(() => {
       if (pendingItem.value > 0) {
@@ -76,31 +77,24 @@ function submitFormModal(data: Promise<TListItem>) {
       }
     })
     .catch(e => console.error(e))
-
 }
 
 function updateListItems(listItem: TListItem) {
   if (list.value) {
     const listStore = useListeStore()
+    list.value = {
+      ...list.value,
+      selectedItems: list.value.selectedItems?.filter(item => item.id !== listItem.id)
+    }
     listStore.setData(list.value)
 
     if (listItem.category) {
-      if (typeof listItem.category === 'string') {
-        listItem.category = CategoryManager.populateCategory({ '@id': listItem.category })
-      } else if (typeof listItem.category === 'object' && (!listItem.category.id || !listItem.category.name)) {
-        listItem.category = { ...CategoryManager.populateCategory(listItem.category), ...listItem.category }
-      }
+      listItem.category = CategoryManager.populateCategory(
+        typeof listItem.category === 'string' ? { '@id': listItem.category } : listItem.category
+      )
     }
 
-    let items = [] as TListItem[]
-    if (list.value.selectedItems) { items = list.value.selectedItems }
-    if (list.value.unselectedItems) { items = [...items, list.value.unselectedItems] }
-
-    if (items.find((i: TListItem) => i['@id'] === listItem['@id'])) {
-      listStore.updateItems(listItem)
-    } else {
-      listStore.addItem(listItem)
-    }
+    listStore.saveItem(listItem)
 
     const listListStore = useListeListStore()
     listListStore.updateItem(listStore.$state)

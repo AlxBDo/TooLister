@@ -13,7 +13,7 @@ export default class CategoryManager {
     }
 
     static populateCategory(category: Partial<Category>): Category {
-        return this.getCategory(category) ?? category
+        return { ...(this.getCategory(category) ?? {}), ...category }
     }
 
     static async searchCategory(category: string, setVModel: Function): Promise<IOption[]> {

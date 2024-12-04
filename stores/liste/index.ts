@@ -41,6 +41,15 @@ export const useListeStore = defineStore("liste", {
             }
         },
 
+        saveItem(item: TListItem) {
+            const items = this.getListItems()
+            if (items.find((i: TListItem) => i['@id'] === item['@id'])) {
+                this.updateItems(item)
+            } else {
+                this.addItem(item)
+            }
+        },
+
         setData(list: Liste) {
             if (list.guest) { this.guest = list.guest }
 

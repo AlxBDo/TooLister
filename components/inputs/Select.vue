@@ -30,7 +30,6 @@ async function searchFunc(search: string) {
 
     const result = await searchPromise(search)
 
-    //if (result.length) { input.setOptions(result) }
     input.loading.value = false
 
     return result.length ? result : [searchOption]

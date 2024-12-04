@@ -2,9 +2,10 @@
 import type { PropType } from 'vue';
 import ItemCard from '../common/ItemCard.vue';
 import ListItemRepository from '~/repositories/ListItem';
+import type { IItem } from '~/types';
 import type { TCardSize } from '../common/ItemCard.vue';
 import type { TListItem } from '~/managers/ListItemForm';
-import type { IItem } from '~/types';
+import type { TListItemCategory } from '~/models/listitem';
 
 const props = defineProps({
     cardSize: { type: String as PropType<TCardSize>, default: 'normal' },
@@ -27,6 +28,10 @@ function deleteFunction(item: TListItem) {
     ListItemRepository.update(deleteItem, item)
 }
 
+function displayCategory(category: TListItemCategory) {
+    return typeof category === 'object' ? category.name : category;
+}
+
 
 </script>
 
@@ -34,7 +39,7 @@ function deleteFunction(item: TListItem) {
     <ItemCard :card-size :edit-function :is-loading :item="(item as IItem)" :remove-item-btn :type="listType"
         @remove-item="deleteFunction">
         <template v-if="displaySlot" #right>
-            <div class="w-14 flex-none mr-4 self-center">{{ item?.category?.name ?? null }}</div>
+            <div class="w-14 flex-none mr-4 self-center">{{ displayCategory(item?.category ?? '') }}</div>
         </template>
         <template v-if="displaySlot" #main>
             <p v-if="item?.quantity" class="text-sm text-slate-400">

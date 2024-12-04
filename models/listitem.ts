@@ -4,13 +4,15 @@ import type { Item } from "./item";
 
 
 export interface ListItem extends Item, IAnyObject {
-  category?: Category | string;
+  category?: TListItemCategory;
   description?: string;
   list?: any;
   name?: string;
   status?: number;
   url?: string;
 }
+
+export type TListItemCategory = Category | string
 
 
 export const DURATION_TYPES = {
