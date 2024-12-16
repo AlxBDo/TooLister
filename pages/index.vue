@@ -5,10 +5,8 @@ import ModalForm from '~/components/form/ModalForm.vue';
 import type { Liste } from '~/models/liste';
 import type { Ref } from 'vue';
 import type { TModalForm } from '~/composables/useModalForm';
-import ListManager from '~/managers/List';
 import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
-
 
 const componentPath = 'liste/Listes.vue'
 
@@ -30,35 +28,10 @@ const preForm: TModalForm<Liste> = {
 
 function submitFormModal(data: Promise<Ref<Liste>>) {
   modalToggle()
-  let isNewItem = false
   if (modalForm?.value) {
     const { item } = modalForm.value
-    if (item) {
-      const itemValue = item
-      if (!item.id) {
-        isNewItem = true
-        item.id = 0
-        listeListStore.addItem(ListManager.createState(itemValue))
-      } else {
-        listeListStore.updateItem(itemValue)
-      }
-      listeListStore.addPendingItem(item.id)
-    }
+    listeListStore.saveListFromForm(item, data)
   }
-  data.then(
-    (list: Ref<Liste>) => {
-      if (isNewItem) {
-        listeListStore.deleteItem({ id: 0 })
-        listeListStore.removePendingItem(0)
-      }
-
-      if (list.value?.id) {
-        listeListStore.removePendingItem(list.value.id)
-        listeListStore.updateItem(toRaw(list.value))
-      }
-    }
-  )
-    .catch(e => console.error(e))
 }
 
 const { modalForm } = useModalForm<Liste>(preForm)

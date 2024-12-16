@@ -1,24 +1,52 @@
 import { defineStore } from "pinia";
+import ListRepository from "~/repositories/List";
 import type { Liste } from "~/models/liste";
 import type { FetchItemData } from "~/models/api";
+
+
 interface State {
-  retrieved?: Liste;
   isLoading: boolean;
+  list?: Liste;
   error?: string;
   hubUrl?: URL;
 }
 
+
 export const useListeShowStore = defineStore("listeShow", {
   state: (): State => ({
-    retrieved: undefined,
+    list: undefined,
     isLoading: false,
     error: "",
     hubUrl: undefined,
   }),
 
   actions: {
+    async getListById(id: number): Promise<Liste> {
+      if (!this.list || !this.list?.id || this.list?.id !== id) {
+        this.isLoading = true
+
+        this.setList(
+          await this.getStoredListById(id)
+        )
+
+        ListRepository.getListById(id).then((fetchResult) => {
+          this.setData(fetchResult)
+          if (this.isLoading) { this.isLoading = false }
+        })
+      }
+
+      if (this.isLoading && this.list?.id && this.list.id === id) { this.isLoading = false }
+
+      return this.list as Liste
+    },
+
+    async getStoredListById(id: number) {
+      const storedLists = await usePersister().getItem('listeList')
+      return storedLists && storedLists.items.find((list: Liste) => list?.id == id)
+    },
+
     setData({ retrieved, isLoading, error, hubUrl }: FetchItemData<Liste>) {
-      this.setRetrieved(retrieved.value);
+      this.setList(retrieved.value);
       this.setLoading(isLoading.value);
       this.setHubUrl(hubUrl.value);
 
@@ -31,8 +59,8 @@ export const useListeShowStore = defineStore("listeShow", {
       this.isLoading = isLoading;
     },
 
-    setRetrieved(retrieved?: Liste) {
-      this.retrieved = retrieved;
+    setList(retrieved?: Liste) {
+      this.list = retrieved;
     },
 
     setHubUrl(hubUrl?: URL) {

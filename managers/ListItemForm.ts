@@ -71,7 +71,7 @@ export default class ListItemFormManager {
         }
 
         const listListStore = useListeListStore()
-        listListStore.updateItem(listStore.$state)
+        listListStore.saveList(listStore.$state)
     }
 
 }

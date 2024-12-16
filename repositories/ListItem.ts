@@ -2,12 +2,12 @@ import ItemRepository from "./Item";
 import ListItemFactory from "~/factories/ListItem";
 import ListItemManager from "~/managers/ListItem";
 import { LIST_TYPES } from "~/models/liste";
-import type { ISearchCriterias } from "~/types";
+import type { ISearchCriteria } from "~/types";
 import type { TListItem } from "~/managers/ListItemForm";
 import type { TListTypes } from "~/types/list";
 
 
-interface ISearchListItemCriteria extends ISearchCriterias {
+interface ISearchListItemCriteria extends ISearchCriteria {
     category?: string;
     listType?: TListTypes;
     status?: number;

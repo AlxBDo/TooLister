@@ -1,6 +1,8 @@
 <template>
-    <Header />
-    <slot />
+    <div>
+        <Header />
+        <slot />
+    </div>
 </template>
 
 <script lang="ts" setup>

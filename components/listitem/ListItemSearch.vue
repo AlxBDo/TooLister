@@ -4,7 +4,6 @@ import type { TListItem } from '~/managers/ListItemForm';
 import { useListItemListStore } from '~/stores/listitem/list';
 import type { Liste } from '~/models/liste';
 import ListItemCard from './ListItemCard.vue';
-import ListItemRepository from '~/repositories/ListItem';
 import ListItemFormManager from '~/managers/ListItemForm';
 import type { IAnyObject } from '~/types';
 
@@ -75,7 +74,6 @@ const searchValueItem = computed(() => {
 })
 
 
-let pendingRequest: any
 watch(vModel, (value) => {
     display.value = isActive.value
     if (value?.length > 1) {
@@ -85,33 +83,7 @@ watch(vModel, (value) => {
         isLoading.value = true
         perfectMatch.value = undefined
 
-        if (pendingRequest) {
-            clearTimeout(pendingRequest)
-        }
-
-        pendingRequest = setTimeout(() => {
-            ListItemRepository.getListItems({ name: value }).then((listItemsResult) => {
-                isLoading.value = false
-                if (listItemsResult && listItemsResult.items?.value && !saving.value && vModel.value) {
-                    const searched = vModel.value.toLowerCase()
-                    const items = ref<TListItem[]>([])
-                    items.value = listItemsResult.items.value.reduce((listItems: TListItem[], listItem: TListItem) => {
-                        if (!listItems?.find((item: TListItem) => item?.name === listItem.name)) {
-                            if (listItem.list !== props.list['@id']) {
-                                listItem = { name: listItem.name, '@id': undefined, id: undefined, list: props.list['@id'] }
-                            }
-                            if (searched === listItem.name?.toLowerCase()) {
-                                perfectMatch.value = listItem
-                            }
-                            listItems.push(listItem)
-                        }
-                        return listItems
-                    }, [])
-                    listItemsStore.setData({ ...listItemsResult, items })
-                }
-            })
-        }, 650)
-
+        listItemsStore.searchItems(value, props.list, isLoading, perfectMatch, listItems.value)
     }
 })
 
@@ -125,7 +97,7 @@ async function save(item: TListItem) {
 
     saving.value = true
     try {
-        const listItem = { ...item, status: 1 }
+        const listItem = { ...item, status: 1, list: `/apip/listes/${props.list?.id}` }
         perfectMatch.value = listItem
         listItemsStore.setItems([listItem])
 
@@ -154,14 +126,14 @@ async function save(item: TListItem) {
         :class="`fixed flex flex-col justify-end max-h-screen right-0 bottom-0 w-full bg-slate-900 bg-opacity-80 p-5 ${isActive && 'h-screen'}`"
         @click.stop="isActiveToggle">
         <div id="result_search_item" class="overflow-y-auto flex flex-wrap justify-center">
-            <template v-if="isActive || vModel">
+            <template v-if="!saving && (isActive || vModel)">
                 <ListItemCard v-for="item in listItems" card-size="small" :key="item.id" :list-type="list.type ?? '0'"
-                    :is-loading="saving && (item.name === perfectMatch?.name)" :item="item" @click="() => save(item)" />
+                    :item="item" @click="() => save(item)" />
             </template>
             <template v-if="listItemsStore.items">
                 <ListItemCard v-for="item in listItemsStore.items" card-size="small" :key="item.id"
-                    :list-type="list.type ?? '0'" :is-loading="saving && (item.name === perfectMatch?.name)"
-                    :item="item" @click="() => save(item)" />
+                    :list-type="list.type ?? '0'" :is-loading="saving && (item.id === perfectMatch?.id)" :item="item"
+                    @click="() => save(item)" />
             </template>
             <ListItemCard v-if="displaySearchValueCard" card-size="small" :list-type="list.type ?? '0'"
                 :item="searchValueItem" @click="() => save(searchValueItem)" />

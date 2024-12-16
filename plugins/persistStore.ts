@@ -1,4 +1,4 @@
-import type { Pinia, PiniaPluginContext, StateTree } from "pinia";
+import type { Pinia, PiniaPluginContext, StateTree, SubscriptionCallbackMutation } from "pinia";
 import type { IAnyObject } from "~/types";
 import { areIdentical } from "~/utils/validation/object";
 import CRYPT from "~/utils/Crypt";
@@ -48,7 +48,6 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
     )
     */
 
-
     if (!state || (store.stateIsEmpty && store.stateIsEmpty(state))) {
         persistedState && store.$patch(persistedState)
     } else if (!areIdentical(state, persistedState)) {
@@ -68,7 +67,13 @@ function populateState(state: StateTree, persistedState?: StateTree) {
         if ((!state[curr]) && persistedState[curr]) {
             acc[curr] = persistedState[curr];
         } else {
-            acc[curr] = Array.isArray(state[curr]) ? state[curr].map((item: any) => toRaw(item)) : toRaw(state[curr]);
+            if (Array.isArray(state[curr])) {
+                acc[curr] = state[curr].map((item: any) => toRaw(item))
+            } else if (typeof state[curr] === 'object') {
+                acc[curr] = populateState(state[curr], persistedState[curr])
+            } else {
+                acc[curr] = toRaw(state[curr])
+            }
         }
         return acc
     }, {} as StateTree)
@@ -79,14 +84,26 @@ function PersistPiniaStoreState({ store }: PiniaPluginContext) {
         const Crypt = new CRYPT(useRuntimeConfig().public.cryptKey as string, useRuntimeConfig().public.cryptIv as string)
         persist(toRaw(store?.$state), store, Crypt)
 
-        store.$subscribe((mutation, state) => {
+        store.$subscribe((mutation: SubscriptionCallbackMutation<StateTree>, state) => {
             if (mutation.type !== 'patch object') {
                 persist(toRaw(state), store, Crypt)
+
+                const { newValue, oldValue } = mutation.events as IAnyObject
+
+                if (
+                    (typeof newValue === 'object' ? !areIdentical(newValue, oldValue) : newValue !== oldValue)
+                    && store.mutationCallback
+                ) { store.mutationCallback(mutation) }
             }
         })
     }
 }
 
-export default defineNuxtPlugin(({ $pinia }) => {
-    ($pinia as Pinia).use(PersistPiniaStoreState)
+
+export default defineNuxtPlugin({
+    name: 'persistStore',
+    dependsOn: ['itemListStore'],
+    async setup({ $pinia }) {
+        ($pinia as Pinia).use(PersistPiniaStoreState)
+    }
 })

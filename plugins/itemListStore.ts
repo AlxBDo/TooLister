@@ -1,7 +1,8 @@
 import type { Pinia, PiniaPluginContext } from "pinia"
 import type { FetchAllData } from "~/models/api";
 import type { Item } from "~/models/item";
-import type { IAnyObject, ISearchParamObject, ISearchCriterias } from "~/types";
+import ItemRepository from "~/repositories/Item";
+import type { IAnyObject, ISearchParamObject } from "~/types";
 import type { IItemListActions } from "~/types/store";
 import type { View } from "~/types/view";
 import { arrayObjectFindAllBy, arrayObjectFindBy } from "~/utils/object";
@@ -38,6 +39,9 @@ function itemListStorePlugin({ store }: PiniaPluginContext) {
                 store.$state.items = store.$state.items.filter((item: T) => {
                     return item["@id"] !== deletedItem["@id"];
                 });
+
+                const repository = new ItemRepository()
+                repository.deleteItem<T>(deletedItem)
             }
         }
 
@@ -88,7 +92,7 @@ function itemListStorePlugin({ store }: PiniaPluginContext) {
         }
 
         if (!store.$state.rewritedActions.includes('updateItem')) {
-            store.updateItem = <T extends Item>(updatedItem: T) => {
+            store.updateItem = <T extends Item>(updatedItem: T, persist: boolean = true) => {
                 const item: T | undefined = store.$state.items.find(
                     (i: T) => i["@id"] === updatedItem["@id"]
                 );
@@ -96,6 +100,11 @@ function itemListStorePlugin({ store }: PiniaPluginContext) {
                 if (!item) {
                     store.$state.items.push(updatedItem)
                     return
+                }
+
+                if (persist) {
+                    const repository = new ItemRepository()
+                    repository.updateItem<T>(updatedItem, item)
                 }
 
                 Object.assign(item, updatedItem);

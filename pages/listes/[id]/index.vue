@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import { useListeShowStore } from "~/stores/liste/show";
-import { useFetchItem } from "~/composables/api";
-import type { Liste } from "~/models/liste";
 import type { TListItem } from "~/managers/ListItemForm";
 import Form from "~/components/listitem/Form.vue";
 import type { ListItem } from "~/models/listitem";
-import type { TListTypes } from "~/types/list";
 import { useListeStore } from "~/stores/liste";
 import { useListeListStore } from "~/stores/liste/list";
 import BallsSpinner from "~/components/common/BallsSpinner.vue";
@@ -14,38 +11,15 @@ import ListItemSearch from "~/components/listitem/ListItemSearch.vue";
 import CategoryManager from "~/managers/Category";
 import ListItemFormManager from "~/managers/ListItemForm";
 
-
 const route = useRoute()
-
 const displayItemForm = ref(false)
 const itemFormData = ref<ListItem>({})
 const pendingItem = ref(0)
-
-const listeShowStore = useListeShowStore()
-listeShowStore.setLoading(true)
-
 const id = decodeURIComponent(route.params.id as string)
 
-const list = ref<Liste>()
-const listType = ref<TListTypes>("0")
-
-
-usePersister().getItem('listeList').then((listesState) => {
-  list.value = listesState && listesState.items.find((list: Liste) => list?.id == parseInt(id))
-  if (list.value) {
-    listeShowStore.setLoading(false)
-    listType.value = list.value.type as TListTypes
-  }
-})
-
-
-useFetchItem<Liste>(`listes/${id}`).then((fetchResult) => {
-  listeShowStore.setData(fetchResult)
-  if (listeShowStore?.retrieved) {
-    list.value = listeShowStore?.retrieved
-    listType.value = listeShowStore?.retrieved.type as TListTypes
-  }
-})
+const listeShowStore = useListeShowStore()
+await listeShowStore.getListById(parseInt(id))
+const { list } = storeToRefs(listeShowStore)
 
 
 function closeModal() {
@@ -55,7 +29,7 @@ function closeModal() {
 
 function itemFormToggle(item?: TListItem) {
   displayItemForm.value = !displayItemForm.value;
-  if (displayItemForm.value && listType.value) {
+  if (displayItemForm.value && list?.value && list.value.type) {
     if (item) {
       pendingItem.value = item.id ?? 0
     } else {
@@ -69,7 +43,7 @@ function submitFormModal(data: Promise<TListItem>) {
   itemFormToggle()
 
   data.then(
-    (listItem: TListItem) => list.value && ListItemFormManager.updateStore(list.value, listItem.value)
+    (listItem: TListItem) => list?.value && ListItemFormManager.updateStore(list.value, listItem.value)
   )
     .finally(() => {
       if (pendingItem.value > 0) {
@@ -80,7 +54,7 @@ function submitFormModal(data: Promise<TListItem>) {
 }
 
 function updateListItems(listItem: TListItem) {
-  if (list.value) {
+  if (list?.value) {
     const listStore = useListeStore()
     list.value = {
       ...list.value,
@@ -97,7 +71,7 @@ function updateListItems(listItem: TListItem) {
     listStore.saveItem(listItem)
 
     const listListStore = useListeListStore()
-    listListStore.updateItem(listStore.$state)
+    listListStore.updateItem(listStore.$state, false)
   }
 }
 
@@ -113,13 +87,14 @@ onBeforeUnmount(() => {
       <p class="mb-5">Chargement de la liste...</p>
       <BallsSpinner />
     </div>
-    <template v-else-if="list">
+    <template v-else-if="list?.id">
       <div>
         <Show @remove-item="updateListItems" :edit-item-function="itemFormToggle" :list :pending-item />
         <ListItemSearch :click-item="updateListItems" :list :list-items="list.selectedItems" />
         <UModal v-model="displayItemForm" prevent-close>
           <UIcon name="i-mdi-close-box" @click="closeModal" class="float-right size-6 block" />
-          <Form :list-item="itemFormData" :list-type="listType" :success-callback="submitFormModal"></Form>
+          <Form :list-item="itemFormData" :list-type="list?.type ?? '0'" :success-callback="submitFormModal">
+          </Form>
         </UModal>
       </div>
     </template>

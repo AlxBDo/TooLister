@@ -1,26 +1,25 @@
+import type { FetchAllData } from "~/models/api";
 import type { Item } from "~/models/item";
-import type { IStringObject } from "~/types";
+import type { IItem, ISearchCriteria, IStringObject } from "~/types";
 
 
 export default class ItemRepository {
 
-    protected async deleteItem<T extends Item>(item: T) {
+    async deleteItem<T extends Item>(item: T) {
         return await useDeleteItem(item);
     }
 
-    protected async getItemById<T extends Item>(id: number | string, ressource: string) {
+    async getItemById<T extends Item>(id: number | string, ressource: string) {
         return await useFetchItem<T>(`${ressource}/${id}`);
     }
 
-    protected async getItems<T extends Item>(ressource: string, params?: IStringObject) {
-        if (params) {
-            ressource += `?${this.transformSearchObjectToUrlParams(params)}`
-        }
-
-        return await useFetchList<T>(ressource)
+    async getItems<T extends Item>(
+        ressource: string,
+        params?: ISearchCriteria & Partial<T>) {
+        return await useFetchList<T>(ressource, params)
     }
 
-    protected async insertItem<T extends Item>(item: T, ressource: string) {
+    async insertItem<T extends Item>(item: T, ressource: string) {
         const data = await useCreateItem<T>(
             ressource,
             item
@@ -30,21 +29,7 @@ export default class ItemRepository {
         }
     }
 
-    /**
-     * 
-     * @param params 
-     * @returns 
-     */
-    transformSearchObjectToUrlParams(params: IStringObject): string {
-        return Object.keys(params).reduce((acc: string[], curr: string) => {
-            if (params[curr]) {
-                acc.push(`${curr}=${params[curr]}`)
-            }
-            return acc
-        }, []).join('&')
-    }
-
-    protected async updateItem<T extends Item>(newItem: T, oldItem: T) {
+    async updateItem<T extends Item>(newItem: T, oldItem: T) {
         if (!oldItem.id) {
             return;
         }

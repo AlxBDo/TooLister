@@ -1,17 +1,31 @@
 import ItemRepository from "./Item";
 import listFactory from "~/factories/List";
-import ListManager from "~/managers/List";
 import type { FetchItemData } from "~/models/api";
 import type { Item } from "~/models/item";
 import type { Liste } from "~/models/liste";
+import type { ISearchCriteria } from "~/types";
+
+export interface IListSearchCriteria extends ISearchCriteria, Partial<Liste> { }
 
 
 class ListRepository extends ItemRepository {
 
     private _ressource: string = 'listes'
 
-    async getById<T extends Item>(id: number | string): Promise<FetchItemData<T>> {
+    private formatList(list: Liste): Liste {
+        if (list.selectedItems) {
+            delete list.selectedItems
+        }
+
+        return list
+    }
+
+    async getListById<T extends Item>(id: number | string): Promise<FetchItemData<T>> {
         return await this.getItemById(id, this._ressource)
+    }
+
+    async getLists(searchCriteria: IListSearchCriteria) {
+        return await this.getItems(this._ressource, searchCriteria)
     }
 
     async insert(list: Liste) {
@@ -19,7 +33,7 @@ class ListRepository extends ItemRepository {
     }
 
     async update(newList: Liste, oldList: Liste) {
-        return await this.updateItem<Liste>(newList, oldList)
+        return await this.updateItem<Liste>(this.formatList(newList), oldList)
     }
 
 }

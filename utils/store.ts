@@ -33,7 +33,8 @@ export const fakeItemListActions: IItemListActions = {
     setError: (error?: string) => false,
     getItem: <T>(criteria: ISearchParamObject): T => ({} as T),
     getItems: <T>(criteria?: ISearchParamObject): T[] => [],
+    setHubUrl: (hubUrl: URL) => false,
     setItems: <T>(items: T[]) => false,
     setLoading: (isLoading: boolean) => false,
-    updateItem: <T extends Item>(updatedItem: T) => false
+    updateItem: <T extends Item>(updatedItem: T, persist?: boolean) => false
 }

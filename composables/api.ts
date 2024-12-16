@@ -5,6 +5,7 @@ import type { View } from "~~/types/view";
 import type { UseFetchOptions } from "#app";
 import type { SubmissionErrors } from "~~/types/error";
 import type { Item } from "~/models/item";
+import type { ISearchCriteria } from "~/types";
 
 const MIME_TYPE = "application/ld+json";
 
@@ -45,18 +46,15 @@ async function useApi<T>(path: string, options: UseFetchOptions<T>) {
 }
 
 export async function useFetchList<T>(
-  resource: string
+  resource: string,
+  params?: ISearchCriteria & Partial<T>
 ): Promise<FetchAllData<T>> {
-  const route = useRoute();
-
   const items: Ref<T[]> = ref([]);
   const view: Ref<View | undefined> = ref(undefined);
   const hubUrl: Ref<URL | undefined> = ref(undefined);
 
-  const page = ref(route.params.page);
-
   const { data, pending, error } = await useApi<T>(API_URL_PATH + resource, {
-    params: { page },
+    params,
 
     onResponse({ response }) {
       hubUrl.value = extractHubURL(response);
@@ -86,7 +84,7 @@ export async function useFetchItem<T>(path: string): Promise<FetchItemData<T>> {
     onResponse({ response }) {
       retrieved.value = response._data;
       hubUrl.value = extractHubURL(response);
-    },
+    }
   });
 
   retrieved.value = data.value as T;

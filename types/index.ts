@@ -10,7 +10,7 @@ export interface IItem extends Item {
     name: string;
 }
 
-export interface ISearchCriterias extends Partial<Item>, IAnyObject { }
+export interface ISearchCriteria extends Partial<Item>, IAnyObject { }
 
 export interface IStringObject { [key: string]: string };
 
