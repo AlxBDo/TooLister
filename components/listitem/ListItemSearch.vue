@@ -4,8 +4,7 @@ import type { TListItem } from '~/managers/ListItemForm';
 import { useListItemListStore } from '~/stores/listitem/list';
 import type { Liste } from '~/models/liste';
 import ListItemCard from './ListItemCard.vue';
-import ListItemFormManager from '~/managers/ListItemForm';
-import type { IAnyObject } from '~/types';
+import { useListeStore } from '~/stores/liste';
 
 
 const props = defineProps({
@@ -15,20 +14,23 @@ const props = defineProps({
 })
 
 
+const listItemsStore = useListItemListStore()
+const listStore = useListeStore()
+listStore.setData(props.list)
+
+const { perfectMatch } = storeToRefs(listItemsStore)
+const { unselectedItems } = storeToRefs(listStore)
+
 const display = ref(false)
 
 const isActive = ref(false)
 
 const isLoading = ref(false)
 
-const perfectMatch = ref<TListItem>()
-
 const saving = ref(false)
 
 const vModel = ref()
 
-
-const listItemsStore = useListItemListStore()
 
 
 const displaySearchValueCard = computed(
@@ -36,35 +38,9 @@ const displaySearchValueCard = computed(
 )
 
 const listItems = computed(() => {
-    if (!vModel?.value) { return props.list.unselectedItems }
+    if (!vModel?.value) { return unselectedItems?.value }
 
-    let items: TListItem[] = []
-    if (props.list.selectedItems) { items = props.list.selectedItems }
-    if (props.list.unselectedItems) { items = [...items, ...props.list.unselectedItems] }
-
-    const searchedItem = vModel.value.toLowerCase()
-    const itemsByIndex: IAnyObject = {}
-    return items.filter(item => {
-        const index = item.name?.toLowerCase().indexOf(searchedItem)
-        if (index !== undefined && index >= 0) {
-            itemsByIndex[item.id ?? 0] = index
-            return true
-        }
-        return false
-    }).sort((a: TListItem, b: TListItem) => {
-        if (!a.name) {
-            return 1
-        }
-        if (!b.name) {
-            return -1
-        }
-
-        if (itemsByIndex[a.id ?? 0] === itemsByIndex[b.id ?? 0]) {
-            return a.name > b.name ? -1 : 1
-        }
-
-        return itemsByIndex[a.id ?? 0] < itemsByIndex[b.id ?? 0] ? -1 : 1
-    })
+    return listStore.searchItem(vModel.value.toLowerCase())
 })
 
 const searchValueItem = computed(() => {
@@ -96,27 +72,12 @@ async function save(item: TListItem) {
     if (saving.value) { return }
 
     saving.value = true
-    try {
-        const listItem = { ...item, status: 1, list: `/apip/listes/${props.list?.id}` }
-        perfectMatch.value = listItem
-        listItemsStore.setItems([listItem])
+    const requestResult = await listItemsStore.save(item, props.list)
 
-        const requestResult = await ListItemFormManager.save(
-            props.list.type ?? "0",
-            listItem,
-            item['@id'] ? item : undefined
-        )
+    requestResult && props.clickItem(toRaw(requestResult.value))
 
-        requestResult && props.clickItem(toRaw(requestResult.value))
-
-        listItemsStore.$reset()
-        perfectMatch.value = undefined
-        saving.value = false
-        vModel.value = null
-        display.value = false
-    } catch (e) {
-        useConsole().log('Error saving item', [e])
-    }
+    saving.value = display.value = false
+    vModel.value = null
 }
 
 </script>
@@ -126,7 +87,7 @@ async function save(item: TListItem) {
         :class="`fixed flex flex-col justify-end max-h-screen right-0 bottom-0 w-full bg-slate-900 bg-opacity-80 p-5 ${isActive && 'h-screen'}`"
         @click.stop="isActiveToggle">
         <div id="result_search_item" class="overflow-y-auto flex flex-wrap justify-center">
-            <template v-if="!saving && (isActive || vModel)">
+            <template v-if="!perfectMatch?.id && (isActive || vModel)">
                 <ListItemCard v-for="item in listItems" card-size="small" :key="item.id" :list-type="list.type ?? '0'"
                     :item="item" @click="() => save(item)" />
             </template>

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { Liste } from "~/models/liste";
 import type { TListItem } from "~/managers/ListItemForm";
 import { removeItem, updateItems } from "~/utils/items";
+import type { IAnyObject } from "~/types";
 
 export const useListeStore = defineStore("liste", {
     state: (): Liste => ({
@@ -48,6 +49,31 @@ export const useListeStore = defineStore("liste", {
             } else {
                 this.addItem(item)
             }
+        },
+
+        searchItem(itemName: string): TListItem[] {
+            const itemsByIndex: IAnyObject = {}
+            return this.getListItems().filter(item => {
+                const index = item.name?.toLowerCase().indexOf(itemName)
+                if (index !== undefined && index >= 0) {
+                    itemsByIndex[item.id ?? 0] = index
+                    return true
+                }
+                return false
+            }).sort((a: TListItem, b: TListItem) => {
+                if (!a.name) {
+                    return 1
+                }
+                if (!b.name) {
+                    return -1
+                }
+
+                if (itemsByIndex[a.id ?? 0] === itemsByIndex[b.id ?? 0]) {
+                    return a.name > b.name ? -1 : 1
+                }
+
+                return itemsByIndex[a.id ?? 0] < itemsByIndex[b.id ?? 0] ? -1 : 1
+            })
         },
 
         setData(list: Liste) {

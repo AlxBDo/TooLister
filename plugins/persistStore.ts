@@ -33,46 +33,58 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
         persistedState = cryptState(persistedState, Crypt, true)
     }
 
-    /**
-    useConsole().log(
-        'persistStore persist',
-        [
-            'areIdentical',
-            areIdentical(state, persistedState),
-            'state',
-            state,
-            'persistedState',
-            persistedState
-        ],
-        logStyleOptions
-    )
-    */
-
     if (!state || (store.stateIsEmpty && store.stateIsEmpty(state))) {
-        persistedState && store.$patch(persistedState)
-    } else if (!areIdentical(state, persistedState)) {
+        if (persistedState) {
+            store.$patch({ ...toRaw(state), ...persistedState })
+        }
+    } else {
         if (encrypt) {
             state = cryptState(state, Crypt)
             if (persistedState) { persistedState = cryptState(persistedState, Crypt) }
         }
 
-        usePersister().setItem(store.$id, populateState(state, persistedState))
+        const { excludedKeys } = state
+
+        const newState = populateState(state, persistedState)
+
+        useConsole().log(
+            'persistStore persist',
+            [
+                'areIdentical',
+                areIdentical(newState, persistedState),
+                'newState',
+                newState,
+                'persistedState',
+                persistedState,
+                'state',
+                state
+            ],
+            logStyleOptions
+        )
+
+        if (!areIdentical(newState, persistedState, excludedKeys)) {
+            usePersister().setItem(store.$id, newState)
+        }
     }
 }
 
 function populateState(state: StateTree, persistedState?: StateTree) {
-    if (!persistedState) { return state }
+    const { excludedKeys } = state
 
-    return Object.keys(persistedState).reduce((acc: StateTree, curr: string) => {
-        if ((!state[curr]) && persistedState[curr]) {
-            acc[curr] = persistedState[curr];
-        } else {
-            if (Array.isArray(state[curr])) {
-                acc[curr] = state[curr].map((item: any) => toRaw(item))
-            } else if (typeof state[curr] === 'object') {
-                acc[curr] = populateState(state[curr], persistedState[curr])
+    if (excludedKeys) { excludedKeys.push('excludedKeys') }
+
+    return Object.keys(persistedState ?? state).reduce((acc: StateTree, curr: string) => {
+        if (!Array.isArray(excludedKeys) || !excludedKeys.includes(curr)) {
+            if (!state[curr] && (persistedState && persistedState[curr])) {
+                acc[curr] = persistedState[curr];
             } else {
-                acc[curr] = toRaw(state[curr])
+                if (Array.isArray(state[curr])) {
+                    acc[curr] = state[curr].map((item: any) => toRaw(item))
+                } else if (typeof state[curr] === 'object') {
+                    acc[curr] = populateState(state[curr], persistedState && persistedState[curr])
+                } else {
+                    acc[curr] = state[curr]
+                }
             }
         }
         return acc

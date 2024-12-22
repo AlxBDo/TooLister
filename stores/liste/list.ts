@@ -9,18 +9,22 @@ import type { IAnyObject } from "~/types"
 import type { StateTree, SubscriptionCallbackMutation } from "pinia"
 
 
-const logStyle = { bgColor: 'green', icon: '🧰' }
-
 interface State extends IItemListState<Liste>, IPersistedState {
-  listsGroupByCategory: Ref<IAnyObject>;
+  excludedKeys?: string[]
+  listsGroupByCategory: IAnyObject;
   pendings?: Array<number | string>;
 }
+
+
+const logStyle = { bgColor: 'green', icon: '🧰' }
+
 
 export const useListeListStore = defineStore("listeList", {
   state: (): State => ({
     ...itemListState<Liste>(),
     ...persistedState(),
-    listsGroupByCategory: ref([]),
+    excludedKeys: ['listsGroupByCategory', 'pendings'],
+    listsGroupByCategory: [],
     pendings: []
   }),
 
@@ -33,6 +37,7 @@ export const useListeListStore = defineStore("listeList", {
 
     async getLists(searchCriteria?: IListSearchCriteria) {
       searchCriteria = searchCriteria ?? { owner: useConnectedUser().user.id }
+      this.isLoading = true
 
       if (!this.items || !this.items.length) {
         const result = await ListRepository.getLists(searchCriteria)
@@ -42,6 +47,8 @@ export const useListeListStore = defineStore("listeList", {
           this.setData(result)
         });
       }
+
+      this.isLoading = false
 
       return this.items
     },
@@ -57,7 +64,7 @@ export const useListeListStore = defineStore("listeList", {
     },
 
     groupListByCategory(lists: Liste[]) {
-      this.listsGroupByCategory.value = arrayObjectGroupBy(lists, 'type')
+      this.listsGroupByCategory = arrayObjectGroupBy(lists, 'type')
     },
 
     mutationCallback(mutation: SubscriptionCallbackMutation<StateTree>) {

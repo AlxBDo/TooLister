@@ -21,6 +21,9 @@ export default () => {
 
     const getItem = async (itemKey: string, db?: IndexedDB): Promise<any> => {
         if (!db) { db = new IndexedDB(dbName, dbOptions) }
+
+        if (!db) { return false }
+
         return await db.getItem(itemKey)
     }
 
@@ -32,6 +35,7 @@ export default () => {
 
     const setItem = async (key: string, item: any) => {
         const db = new IndexedDB(dbName, dbOptions)
+
         const isExist = await getItem(key, db)
         let operation: TIndexedDBMethods = isExist ? 'updateItem' : 'setItem'
 

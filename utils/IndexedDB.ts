@@ -1,4 +1,3 @@
-
 interface ObjectStoreCreationOptions {
     autoIncrement?: boolean
     keyPath?: string
@@ -119,102 +118,88 @@ export default class IndexedDB {
         callback(data)
     }
 
-    private open(eventCallback?: IOnRequestCallbackParams) {
-        const request = indexedDB.open(this._name, this._version)
+    private open(eventCallback?: IOnRequestCallbackParams): IDBOpenDBRequest {
+        const request = indexedDB.open(this._name, this._version);
 
         const setDb = () => {
-            this._db = request.result
-        }
+            this._db = request.result;
+        };
+
+        const handleSuccess = (successCallback: () => void) => {
+            setDb();
+
+            if (!this._db) return;
+
+            const transaction = this._db.transaction(this._objectStoreName, this._transactionMode);
+            transaction.onerror = () => this.onError(transaction.error);
+
+            this._objectStore = transaction.objectStore(this._objectStoreName);
+
+            if (this._objectStore) {
+                successCallback();
+            }
+        };
 
         if (eventCallback?.success) {
-            const successCallback = eventCallback.success
-            eventCallback.success = () => {
-                setDb()
-
-                if (!this._db) {
-                    return
-                }
-
-                const transaction = this._db.transaction(
-                    this._objectStoreName,
-                    this._transactionMode
-                )
-
-                transaction.onerror = () => this.onError(transaction.error)
-
-                this._objectStore = transaction.objectStore(
-                    this._objectStoreName
-                )
-
-                if (this._objectStore) {
-                    successCallback()
-                }
-            }
+            const originalSuccessCallback = eventCallback.success;
+            eventCallback.success = () => handleSuccess(originalSuccessCallback);
         }
 
         if (eventCallback?.upgrade) {
-            const upgradeCallback = eventCallback.upgrade
+            const originalUpgradeCallback = eventCallback.upgrade;
             eventCallback.upgrade = () => {
-                setDb()
-                upgradeCallback()
-            }
+                setDb();
+                originalUpgradeCallback();
+            };
         }
 
         const error = () => {
-            this.onError(request.error, eventCallback?.error)
-        }
+            this.onError(request.error, eventCallback?.error);
+        };
 
-        eventCallback && this.openRequestEventsHandler(request, { ...eventCallback, error })
+        eventCallback && this.openRequestEventsHandler(request, { ...eventCallback, error });
 
-        return request
+        return request;
     }
 
     public removeItem(key: ObjectItemKey): void {
         const success = () => {
             if (this._objectStore) {
-                const deleteRequest = this._objectStore.delete(key)
-                this.removeItemRetunFunctions(deleteRequest, key as string)
+                const deleteRequest = this._objectStore.delete(key);
+                this.handleDeleteRequest(deleteRequest, key as string);
             }
-        }
+        };
 
-        this.open({ success })
+        this.open({ success });
     }
 
-    private removeItemRetunFunctions(deleteRequest: IDBRequest, key: string) {
-        deleteRequest.onerror = () =>
-            console.log(`Item "${key}" remove`, deleteRequest.error)
+    private handleDeleteRequest(deleteRequest: IDBRequest, key: string): void {
+        deleteRequest.onerror = () => console.log(`Item "${key}" remove`, deleteRequest.error);
     }
 
     public removeItems(excludedItems?: any[]): void {
         const success = () => {
             if (this._objectStore) {
-                const getAllRequest = this._objectStore.getAllKeys()
+                const getAllRequest = this._objectStore.getAllKeys();
 
-                const success = () => {
-                    const items = getAllRequest.result
+                const handleGetAllSuccess = () => {
+                    const items = getAllRequest.result;
 
                     items.forEach((key) => {
-                        if (
-                            this._objectStore &&
-                            (!excludedItems || !excludedItems.includes(key))
-                        ) {
-                            const deleteRequest = this._objectStore.delete(key)
-                            this.removeItemRetunFunctions(
-                                deleteRequest,
-                                key as string
-                            )
+                        if (this._objectStore && (!excludedItems || !excludedItems.includes(key))) {
+                            const deleteRequest = this._objectStore.delete(key);
+                            this.handleDeleteRequest(deleteRequest, key as string);
                         }
-                    })
-                }
+                    });
+                };
 
-                const error = () =>
-                    console.log('removeItems', [getAllRequest.error])
+                const error = () => console.log('removeItems', [getAllRequest.error]);
 
-                this.requestEventsHandler(getAllRequest, { error, success })
+                this.requestEventsHandler(getAllRequest, { error, success: handleGetAllSuccess });
             }
-        }
+        };
 
-        this.open({ success })
+        this.open({ success });
     }
 
     private requestEventsHandler(
@@ -243,35 +228,28 @@ export default class IndexedDB {
     public setItem(item: Object, index?: string[]): void {
         const success = () => {
             if (this._objectStore) {
-                const addRequest = this._objectStore.add(item)
+                const addRequest = this._objectStore.add(item);
                 if (index) {
-                    const success = () => {
+                    const handleAddSuccess = () => {
                         index.forEach((i) => {
-                            this._objectStore?.createIndex(i, i, {
-                                unique: true
-                            })
-                            console.log(`"${i}" index created`)
-                        })
-                    }
+                            this._objectStore?.createIndex(i, i, { unique: true });
+                            console.log(`"${i}" index created`);
+                        });
+                    };
 
-                    const error = () => this.onError(addRequest.error)
-                    this.requestEventsHandler(addRequest, { error, success })
+                    const error = () => this.onError(addRequest.error);
+                    this.requestEventsHandler(addRequest, { error, success: handleAddSuccess });
                 }
             }
-        }
+        };
 
         const upgrade = () => {
-            if (this._db) {
-                if (!this._db.objectStoreNames.contains(this._name)) {
-                    this._db.createObjectStore(
-                        this._objectStoreName,
-                        this._objectStoreOptions
-                    )
-                }
+            if (this._db && !this._db.objectStoreNames.contains(this._name)) {
+                this._db.createObjectStore(this._objectStoreName, this._objectStoreOptions);
             }
-        }
+        };
 
-        this.open({ success, upgrade })
+        this.open({ success, upgrade });
     }
 
     public updateItem(item: Object): void {

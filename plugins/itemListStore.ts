@@ -12,6 +12,24 @@ type TItemListActionsName = keyof IItemListActions
 
 function itemListStorePlugin({ store }: PiniaPluginContext) {
     if (store.$id.substring(store.$id.length - 4) === 'List') {
+        if (store.$state.persist) {
+            if (!store.$state.excludedKeys || !Array.isArray(store.$state.excludedKeys)) {
+                store.$state.excludedKeys = []
+            }
+
+            const persistedListExcludedKeys = [
+                'error',
+                'hubUrl',
+                'isEncrypted',
+                'isLoading',
+                'persist',
+                'persistedPropertiesToEncrypt',
+                'rewritedActions'
+            ]
+
+            store.$state.excludedKeys = [...store.$state.excludedKeys, ...persistedListExcludedKeys]
+        }
+
         if (!store.$state.rewritedActions) {
             store.$state.rewritedActions = [] as TItemListActionsName[]
         }

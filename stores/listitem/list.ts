@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { fakeItemListActions, itemListState } from "~/utils/store";
+import ListItemFormManager from "~/managers/ListItemForm";
 import ListItemRepository from "~/repositories/ListItem";
 import type { IItemListState } from "~/types/store";
 import type { Liste } from "~/models/liste";
@@ -7,15 +8,33 @@ import type { TListItem } from "~/managers/ListItemForm";
 
 interface State extends IItemListState<TListItem> {
   pendingRequest?: any
+  perfectMatch: TListItem | undefined
 }
 
 export const useListItemListStore = defineStore("listitemList", {
   state: (): State => ({
-    ...itemListState<TListItem>()
+    ...itemListState<TListItem>(),
+    perfectMatch: undefined
   }),
 
   actions: {
     ...fakeItemListActions,
+
+    async save(item: TListItem, list: Liste): Promise<Ref<TListItem | undefined> | undefined> {
+      const listItem = { ...item, status: 1, list: `/apip/listes/${list?.id}` }
+      this.perfectMatch = listItem
+      this.setItems([listItem])
+
+      const requestResult = await ListItemFormManager.save(
+        list.type ?? "0",
+        listItem,
+        item['@id'] ? item : undefined
+      )
+
+      this.$reset()
+
+      return requestResult
+    },
 
     searchItems(
       itemName: string,

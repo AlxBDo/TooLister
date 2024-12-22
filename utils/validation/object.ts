@@ -6,13 +6,13 @@ const logStyleOptions = {
     icon: '☢️'
 }
 
-export const areIdentical = (object1: IAnyObject, object2: IAnyObject, compareLength: boolean = true) => {
-    if (!object2 || (compareLength && object1.length !== object2.length)) {
+export const areIdentical = (object1: IAnyObject, object2: IAnyObject, excludedKeys?: string[]) => {
+    if (!object2 || (!excludedKeys && object1.length !== object2.length)) {
         return false
     }
 
     return Object.keys(object1).reduce((acc, key) => {
-        if (acc) {
+        if (acc && (!excludedKeys || !excludedKeys.includes(key))) {
             if (!object1[key] || !object2[key]) {
                 acc = object1[key] === object2[key]
             } else if (Array.isArray(object1[key])) {
@@ -38,7 +38,7 @@ export const areIdentical = (object1: IAnyObject, object2: IAnyObject, compareLe
                 }, true)
                 */
             } else if (typeof object1[key] === 'object') {
-                acc = areIdentical(object1[key], object2[key], false)
+                acc = areIdentical(object1[key], object2[key])
             } else { acc = object1[key] === object2[key] }
         }
         return acc
