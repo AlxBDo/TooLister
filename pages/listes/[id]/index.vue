@@ -8,7 +8,6 @@ import { useListeListStore } from "~/stores/liste/list";
 import BallsSpinner from "~/components/common/BallsSpinner.vue";
 import Show from "~/components/liste/Show.vue";
 import ListItemSearch from "~/components/listitem/ListItemSearch.vue";
-import CategoryManager from "~/managers/Category";
 import ListItemFormManager from "~/managers/ListItemForm";
 
 const route = useRoute()
@@ -44,12 +43,11 @@ function submitFormModal(data: Promise<TListItem>) {
 
   data.then(
     (listItem: TListItem) => list?.value && ListItemFormManager.updateStore(list.value, listItem.value)
-  )
-    .finally(() => {
-      if (pendingItem.value > 0) {
-        pendingItem.value = 0
-      }
-    })
+  ).finally(() => {
+    if (pendingItem.value > 0) {
+      pendingItem.value = 0
+    }
+  })
     .catch(e => console.error(e))
 }
 
@@ -61,12 +59,6 @@ function updateListItems(listItem: TListItem) {
       selectedItems: list.value.selectedItems?.filter(item => item.id !== listItem.id)
     }
     listStore.setData(list.value)
-
-    if (listItem.category) {
-      listItem.category = CategoryManager.populateCategory(
-        typeof listItem.category === 'string' ? { '@id': listItem.category } : listItem.category
-      )
-    }
 
     listStore.saveItem(listItem)
 

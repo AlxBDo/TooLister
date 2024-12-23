@@ -26,7 +26,9 @@ export default abstract class InputsFactory<T extends IAnyObject> {
     protected readonly FACTORIES_MAP_BY_TYPE: Record<TInputType, InputFactory | OptionsInputFactory | SelectFactory> = {
         checkbox: this._factories.optionsInput,
         date: this._factories.input,
+        email: this._factories.input,
         number: this._factories.input,
+        password: this._factories.input,
         radio: this._factories.optionsInput,
         select: this._factories.select,
         text: this._factories.input,

@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
-import type { Liste } from "~/models/liste";
-import type { TListItem } from "~/managers/ListItemForm";
+import CategoryManager from "~/managers/Category";
 import { removeItem, updateItems } from "~/utils/items";
 import type { IAnyObject } from "~/types";
+import type { Liste } from "~/models/liste";
+import type { TListItem } from "~/managers/ListItemForm";
 
 export const useListeStore = defineStore("liste", {
     state: (): Liste => ({
@@ -43,6 +44,11 @@ export const useListeStore = defineStore("liste", {
         },
 
         saveItem(item: TListItem) {
+            if (item.category) {
+                item.category = CategoryManager.populateCategory(
+                    typeof item.category === 'string' ? { '@id': item.category } : item.category
+                )
+            }
             const items = this.getListItems()
 
             if (items.find((i: TListItem) => i['@id'] === item['@id'])) {

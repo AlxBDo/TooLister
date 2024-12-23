@@ -18,7 +18,7 @@ const listeListStore = useListeListStore()
 
 const modalIsOpen = ref<boolean>(false)
 
-const preForm: TModalForm<Liste> = {
+const listForm: TModalForm<Liste> = {
   id: formId,
   isOpen: modalIsOpen,
   item: listFactory.create(),
@@ -34,7 +34,7 @@ function submitFormModal(data: Promise<Ref<Liste>>) {
   }
 }
 
-const { modalForm } = useModalForm<Liste>(preForm)
+const { modalForm } = useModalForm<Liste>(listForm)
 
 function modalToggle() {
   modalIsOpen.value = !modalIsOpen.value

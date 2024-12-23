@@ -92,6 +92,8 @@ const cancelFunc = computed(() => props.cancelFunction ?? (() => true))
         @submit="onSubmit">
         <h2 v-if="props?.title" :class="`${props?.htmlClass?.title}`">{{ props.title }}</h2>
 
+        <slot name="errors"></slot>
+
         <slot name="description"></slot>
 
         <Input v-for="input in props.inputs" v-bind:="input" @update-input="updateInput" />

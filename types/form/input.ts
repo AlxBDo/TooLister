@@ -55,7 +55,7 @@ export interface ISelect extends IInputWithOptions {
 
 export type TColors = 'blue' | 'gray' | 'green' | 'orange' | 'primary' | 'red' | 'white'
 
-export type TInputType = 'checkbox' | 'date' | 'number' | 'radio' | 'select' | 'text' | 'textarea'
+export type TInputType = 'checkbox' | 'date' | 'email' | 'number' | 'password' | 'radio' | 'select' | 'text' | 'textarea'
 
 export type TInputValue = boolean | number | string | undefined
 
