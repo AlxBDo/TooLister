@@ -23,7 +23,17 @@ export const useListeListStore = defineStore("listeList", {
   state: (): State => ({
     ...itemListState<Liste>(),
     ...persistedState(),
-    excludedKeys: ['listsGroupByCategory', 'pendings'],
+    excludedKeys: [
+      'error',
+      'hubUrl',
+      'isEncrypted',
+      'isLoading',
+      'persist',
+      'persistedPropertiesToEncrypt',
+      'rewritedActions',
+      'listsGroupByCategory',
+      'pendings'
+    ],
     listsGroupByCategory: [],
     pendings: []
   }),
@@ -89,7 +99,6 @@ export const useListeListStore = defineStore("listeList", {
     },
 
     saveList(list: Liste) {
-      useConsole().log('listeListStore saveList', [list])
       if (this.items.find((item: Liste) => item.id === list.id)) {
         this.updateItem(list, false)
       } else {

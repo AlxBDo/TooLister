@@ -27,7 +27,7 @@ export const useListeStore = defineStore("liste", {
         },
 
         getListItems(): TListItem[] {
-            return [...this.items ?? [], this.selectedItems ?? [], this.unselectedItems ?? []]
+            return [...(this.items ?? []), ...(this.selectedItems ?? []), ...(this.unselectedItems ?? [])]
         },
 
         hydrateNewItem(item: TListItem) {
@@ -44,6 +44,7 @@ export const useListeStore = defineStore("liste", {
 
         saveItem(item: TListItem) {
             const items = this.getListItems()
+
             if (items.find((i: TListItem) => i['@id'] === item['@id'])) {
                 this.updateItems(item)
             } else {
@@ -109,6 +110,8 @@ export const useListeStore = defineStore("liste", {
 
                 if (!this.selectedItems) {
                     this.selectedItems = [updatedItem]
+                } else if ((this.selectedItems && !this.selectedItems.find(item => item.id === updatedItem.id))) {
+                    this.selectedItems.push(updatedItem)
                 } else {
                     this.selectedItems = updateItems(updatedItem, this.selectedItems)
                 }

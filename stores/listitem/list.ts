@@ -47,31 +47,39 @@ export const useListItemListStore = defineStore("listitemList", {
         clearTimeout(this.pendingRequest)
       }
 
-      this.pendingRequest = setTimeout(() => {
-        ListItemRepository.getListItems({ name: itemName }).then((listItemsResult) => {
-          isLoading.value = false
-          if (listItemsResult && listItemsResult.items?.value) {
-            const searched = itemName.toLowerCase()
-            const items = listItemsResult.items.value.reduce((listItems: TListItem[], listItem: TListItem) => {
-              if (
-                ![...listItems, ...(itemsFound ?? [])]?.find((item: TListItem) => item?.name === listItem.name)
-              ) {
-                if (listItem.list !== list['@id']) {
-                  listItem = { name: listItem.name, '@id': undefined, id: undefined, list: list['@id'] }
-                }
-                if (searched === listItem.name?.toLowerCase()) {
-                  perfectMatch.value = listItem
-                }
+      if (itemName.length > 1) {
+        this.pendingRequest = setTimeout(() => {
+          ListItemRepository.getListItems({ name: itemName }).then((listItemsResult) => {
+            isLoading.value = false
+            if (listItemsResult && listItemsResult.items?.value) {
+              const searched = itemName.toLowerCase()
+              const items = listItemsResult.items.value.reduce((listItems: TListItem[], listItem: TListItem) => {
+                if (
+                  ![...listItems, ...(itemsFound ?? [])]?.find((item: TListItem) => item?.name === listItem.name)
+                ) {
+                  if (listItem.list !== list['@id']) {
+                    listItem = { name: listItem.name, '@id': undefined, id: undefined, list: list['@id'] }
+                  }
+                  if (searched === listItem.name?.toLowerCase()) {
+                    perfectMatch.value = listItem
+                  }
 
-                listItems.push(listItem)
-              }
-              return listItems
-            }, [])
+                  listItems.push(listItem)
+                }
+                return listItems
+              }, [])
 
-            this.setItems(items)
-          }
-        })
-      }, 650)
+              this.setItems(items)
+            }
+          })
+        }, 650)
+      }
+
+      useConsole().log('ListItemListStore', [list?.unselectedItems, list.unselectedItems && arrayObjectFindAllBy(list.unselectedItems, { name: itemName })])
+
+      if (list.unselectedItems && list.unselectedItems.length) {
+        this.setItems(arrayObjectFindAllBy(list.unselectedItems, { name: itemName }, false))
+      }
     }
   },
 });

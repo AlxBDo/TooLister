@@ -4,12 +4,12 @@ import type { ISearchCriteria, IStringObject } from "~/types";
 import type { TListTypes } from "~/types/list";
 
 
-interface ISearchCategoryParams extends ISearchCriteria, Partial<TCategoryCriteria> {
+export interface ISearchCategoryParams extends ISearchCriteria, Partial<TCategoryCriteria> {
     name?: string;
     listType?: TListTypes;
 }
 
-interface ISearchCategoriesParams extends TCategoriesCriteria {
+export interface ISearchCategoriesParams extends TCategoriesCriteria {
     listType?: TListTypes[];
 }
 
@@ -29,7 +29,7 @@ class CategoryRepository extends ItemRepository {
      * @param {ISearchCategoriesParams} params 
      * @returns 
      */
-    async getCategories(params?: ISearchCategoriesParams) {
+    async getCategories(params?: ISearchCategoriesParams | ISearchCategoryParams) {
         return await this.getItems<Category>(this.endpoint, params as IStringObject)
     }
 

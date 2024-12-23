@@ -2,7 +2,6 @@ import type { Category } from "~/models/category";
 import type { ISearchCriteria } from "~/types";
 import CategoryRepository from "~/repositories/Category";
 import { useCategoryListStore } from "~/stores/category/list";
-import { arrayObjectFindBy } from "~/utils/object";
 import { useListeListStore } from "~/stores/liste/list";
 import type { TListTypes } from "~/types/list";
 import type { Liste } from "~/models/liste";
@@ -35,5 +34,9 @@ export default function useCategories() {
         return categoryList.getItem<Category>(searchBy)
     }
 
-    return { categories: items, getCategory, isLoading }
+    function searchCategories(searchBy: IGetCategoryParams) {
+        return categoryList.searchCategories(searchBy)
+    }
+
+    return { categories: items, getCategory, isLoading, searchCategories }
 }

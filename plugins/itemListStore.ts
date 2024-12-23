@@ -10,14 +10,12 @@ import { itemsAreEmpty } from "~/utils/validation/store";
 
 type TItemListActionsName = keyof IItemListActions
 
+const logStyleOptions = { bgColor: 'brown', icon: '🛠️' }
+
 function itemListStorePlugin({ store }: PiniaPluginContext) {
     if (store.$id.substring(store.$id.length - 4) === 'List') {
-        if (store.$state.persist) {
-            if (!store.$state.excludedKeys || !Array.isArray(store.$state.excludedKeys)) {
-                store.$state.excludedKeys = []
-            }
-
-            const persistedListExcludedKeys = [
+        if (store.$state.persist && (!store.$state.excludedKeys || !Array.isArray(store.$state.excludedKeys))) {
+            store.$state.excludedKeys = [
                 'error',
                 'hubUrl',
                 'isEncrypted',
@@ -26,8 +24,6 @@ function itemListStorePlugin({ store }: PiniaPluginContext) {
                 'persistedPropertiesToEncrypt',
                 'rewritedActions'
             ]
-
-            store.$state.excludedKeys = [...store.$state.excludedKeys, ...persistedListExcludedKeys]
         }
 
         if (!store.$state.rewritedActions) {

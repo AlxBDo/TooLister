@@ -47,6 +47,7 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
 
         const newState = populateState(state, persistedState)
 
+        /**
         useConsole().log(
             'persistStore persist',
             [
@@ -61,6 +62,7 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
             ],
             logStyleOptions
         )
+         */
 
         if (!areIdentical(newState, persistedState, excludedKeys)) {
             usePersister().setItem(store.$id, newState)
@@ -71,19 +73,19 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
 function populateState(state: StateTree, persistedState?: StateTree) {
     const { excludedKeys } = state
 
-    if (excludedKeys) { excludedKeys.push('excludedKeys') }
+    if (excludedKeys && !excludedKeys.includes('excludedKeys')) { excludedKeys.push('excludedKeys') }
 
-    return Object.keys(persistedState ?? state).reduce((acc: StateTree, curr: string) => {
-        if (!Array.isArray(excludedKeys) || !excludedKeys.includes(curr)) {
+    return Object.keys(state).reduce((acc: StateTree, curr: string) => {
+        if ((!Array.isArray(excludedKeys) || !excludedKeys.includes(curr)) && curr !== "@context") {
             if (!state[curr] && (persistedState && persistedState[curr])) {
                 acc[curr] = persistedState[curr];
             } else {
                 if (Array.isArray(state[curr])) {
-                    acc[curr] = state[curr].map((item: any) => toRaw(item))
+                    acc[curr] = state[curr].map((item: any) => typeof item === "object" ? populateState(item) : toRaw(item))
                 } else if (typeof state[curr] === 'object') {
                     acc[curr] = populateState(state[curr], persistedState && persistedState[curr])
                 } else {
-                    acc[curr] = state[curr]
+                    acc[curr] = toRaw(state[curr])
                 }
             }
         }

@@ -16,7 +16,9 @@ const props = defineProps({
 
 const listItemsStore = useListItemListStore()
 const listStore = useListeStore()
+
 listStore.setData(props.list)
+listItemsStore.setItems(listStore.unselectedItems as TListItem[])
 
 const { perfectMatch } = storeToRefs(listItemsStore)
 const { unselectedItems } = storeToRefs(listStore)
@@ -86,11 +88,8 @@ async function save(item: TListItem) {
     <section id="search_item"
         :class="`fixed flex flex-col justify-end max-h-screen right-0 bottom-0 w-full bg-slate-900 bg-opacity-80 p-5 ${isActive && 'h-screen'}`"
         @click.stop="isActiveToggle">
-        <div id="result_search_item" class="overflow-y-auto flex flex-wrap justify-center">
-            <template v-if="!perfectMatch?.id && (isActive || vModel)">
-                <ListItemCard v-for="item in listItems" card-size="small" :key="item.id" :list-type="list.type ?? '0'"
-                    :item="item" @click="() => save(item)" />
-            </template>
+        <div v-if="isActive || perfectMatch?.id" id="result_search_item"
+            class="overflow-y-auto flex flex-wrap justify-center">
             <template v-if="listItemsStore.items">
                 <ListItemCard v-for="item in listItemsStore.items" card-size="small" :key="item.id"
                     :list-type="list.type ?? '0'" :is-loading="saving && (item.id === perfectMatch?.id)" :item="item"
