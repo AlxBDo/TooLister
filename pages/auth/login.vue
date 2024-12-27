@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <UContainer>
         <LoginForm @submit="login" :errors.sync="errorLogin" />
-    </div>
+    </UContainer>
 </template>
 
 <script lang="ts" setup>

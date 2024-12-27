@@ -27,7 +27,7 @@ async function onSubmit(data: IAnyObject) {
 </script>
 
 <template>
-    <Form :inputs="AuthFormManager.getLoginInputs()" @submit="onSubmit">
+    <Form class="my-6" :inputs="AuthFormManager.getLoginInputs()" @submit="onSubmit">
         <template #errors>
             <UAlert v-if="errors?.form && errors?.form.length > 0" icon="i-material-symbols-error-outline"
                 @close="() => closeAlert('form')"

@@ -4,19 +4,19 @@ const firstname = computed(() => useConnectedUser().user?.firstname)
 
 <template>
     <main>
-        <section v-if="firstname" id="connected">
-            <h1>Bienvenue {{ firstname }}</h1>
-            <p>Connexion en cours...</p>
-        </section>
-        <section v-else id="not-connected">
-            <h1>Bienvenue</h1>
-            <p>Avec Listtoo, liste tout !</p>
-            <p>
-                <NuxtLink to="/auth/login">Connecte toi</NuxtLink>
-            </p>
-            <p>
-                <NuxtLink to="/auth/logup">Pas encore inscris</NuxtLink>
-            </p>
-        </section>
+        <h1 class="my-6 text-center text-2xl">Bienvenue {{ firstname }}</h1>
+        <UContainer>
+            <p v-if="firstname">Connexion en cours...</p>
+            <div v-else id="not-connected">
+                <p class="mb-4">Avec TooLister, liste tout !</p>
+                <p class="mb-4">
+                    <span class="mr-2">Déjà un compte ?</span>
+                    <NuxtLink to="/auth/login">Connecte toi</NuxtLink>
+                </p>
+                <p class="mb-4">
+                    <NuxtLink to="/auth/logup">Pas encore inscris !</NuxtLink>
+                </p>
+            </div>
+        </UContainer>
     </main>
 </template>

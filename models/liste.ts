@@ -1,16 +1,18 @@
 import type { TListTypes, TListTypesMap } from "~/types/list";
 import type { Item } from "./item";
 import type { TListItem } from "~/managers/ListItemForm";
+import type { ListUserRole } from "./listUserRole";
 
 
 export interface Liste extends Item {
   guest?: any;
+  items?: TListItem[];
   name?: string;
   owner?: any;
-  type?: TListTypes;
   selectedItems?: TListItem[];
-  items?: TListItem[];
+  type?: TListTypes;
   unselectedItems?: TListItem[];
+  usersRole?: ListUserRole[];
 }
 
 

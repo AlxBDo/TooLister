@@ -29,7 +29,9 @@ function deleteFunction(item: TListItem) {
 }
 
 function displayCategory(category: TListItemCategory) {
-    return typeof category === 'object' ? category.name : category;
+    return typeof category === 'object' ? category.name?.split(' ').reduce((acc: string, curr: string) => {
+        return curr.length > 2 ? (acc + curr.charAt(0).toUpperCase()) : acc
+    }, '') : category;
 }
 
 

@@ -84,9 +84,11 @@ onBeforeUnmount(() => {
         <Show @remove-item="updateListItems" :edit-item-function="itemFormToggle" :list :pending-item />
         <ListItemSearch :click-item="updateListItems" :list :list-items="list.selectedItems" />
         <UModal v-model="displayItemForm" prevent-close>
-          <UIcon name="i-mdi-close-box" @click="closeModal" class="float-right size-6 block" />
-          <Form :list-item="itemFormData" :list-type="list?.type ?? '0'" :success-callback="submitFormModal">
-          </Form>
+          <UContainer>
+            <UIcon name="i-mdi-close-box" @click="closeModal" class="float-right size-6 block mt-5" />
+            <Form class="my-12" :list-item="itemFormData" :list-type="list?.type ?? '0'"
+              :success-callback="submitFormModal"></Form>
+          </UContainer>
         </UModal>
       </div>
     </template>

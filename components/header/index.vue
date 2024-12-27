@@ -15,8 +15,8 @@ const logout = () => {
 <template>
     <header class="flex items-center justify-between p-3">
         <NuxtLink to="/" class="flex items-center">
-            <img src="~/assets/img/toolister_logo-45px.png" title="logo" alt="logo" />
-            <h1 class="ml-2 text-2xl">TooLister</h1>
+            <img src="~/assets/img/TooLister_logo_black_50.png" title="logo" alt="logo" />
+            <h1 class="ml-2 text-3xl text-red-400">TooLister</h1>
         </NuxtLink>
         <nav v-if="authenticated">
             <ul>

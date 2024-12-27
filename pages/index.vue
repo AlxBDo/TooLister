@@ -46,10 +46,12 @@ function modalToggle() {
 
 <template>
   <main>
-    <p class="text-lg text-center mb-5">Hello {{ firstname }}</p>
-    <AsyncComponent :component-path loading-text="Chargement de tes listes..." />
+    <h2 class="text-lg text-center mb-5">Hello {{ firstname }}</h2>
+    <UContainer>
+      <AsyncComponent :component-path loading-text="Chargement de tes listes..." />
+      <UButton class="fixed bottom-2 right-2" icon="i-ic-baseline-plus" size="lg" color="primary" square
+        :ui="{ rounded: 'rounded-full' }" variant="solid" @click="modalToggle" />
+    </UContainer>
     <ModalForm :id="formId" @close="modalToggle" />
-    <UButton class="fixed bottom-2 right-2" icon="i-ic-baseline-plus" size="lg" color="primary" square
-      :ui="{ rounded: 'rounded-full' }" variant="solid" @click="modalToggle" />
   </main>
 </template>

@@ -44,28 +44,32 @@ onBeforeUnmount(() => {
 <template>
     <section>
         <h2 class="mb-3 text-lg">Mes listes</h2>
-        <div v-if="isLoading && (
-            !listsGroupByCategory
-            || (typeof listsGroupByCategory === 'object' && !Object.keys(listsGroupByCategory).length))
-        ">
-            Chargement...
-        </div>
-        <div class="mt-4" v-else-if="listsGroupByCategory && Array.isArray(listCatgories) && listCatgories.length">
-            <UContainer v-for="category in listCatgories">
-                <h3 class="flex my-4 items-center">
-                    <UIcon v-if="category.icon" :name="category.icon" class="mr-2" />
-                    {{ capitalize(category.label) }}
-                </h3>
-                <div v-if="listsGroupByCategory[category.value] && Array.isArray(listsGroupByCategory[category.value])">
+        <UContainer>
+            <p v-if="isLoading && (
+                !listsGroupByCategory
+                || (typeof listsGroupByCategory === 'object' && !Object.keys(listsGroupByCategory).length))
+            ">
+                Récupération des listes en cours...
+            </p>
+            <UAccordion v-else-if="listsGroupByCategory && Array.isArray(listCatgories) && listCatgories.length"
+                class="mt-4" color="red" multiple size="lg" variant="outline" :items="listCatgories.map(category => {
+                    return {
+                        defaultOpen: true,
+                        icon: category.icon,
+                        label: category.label,
+                        slot: `category-${category.value}`
+                    }
+                })">
+                <template v-for="category in listCatgories" #[`category-${category.value}`]>
                     <ItemCard v-for="item in listsGroupByCategory[category.value]" class="cursor-pointer" :key="item.id"
                         :item="(item as IItem)" :type="item.type ?? '0'"
                         :is-loading="pendingItems.includes(item.id ?? 0)" @click="() => item.id && goToList(item.id)"
                         @remove-item="removeItem" />
-                </div>
-            </UContainer>
-        </div>
-        <div v-else>
-            Aucune liste
-        </div>
+                </template>
+            </UAccordion>
+            <p v-else>
+                Aucune liste
+            </p>
+        </UContainer>
     </section>
 </template>

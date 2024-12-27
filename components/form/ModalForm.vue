@@ -34,8 +34,10 @@ function pendingItem(item: IAnyObject) {
 
 <template>
     <UModal v-if="modalForm" v-model="modalForm.isOpen">
-        <UIcon name="i-mdi-close-box" @click="closeModal" class="float-right size-6 block" />
-        <LazyAsyncComponent v-if="modalForm" :component-path="modalForm.path" :component-props="getFormProps()"
-            @pending-item="pendingItem" />
+        <UContainer>
+            <UIcon name="i-mdi-close-box" @click="closeModal" class="float-right size-6 block mt-5" />
+            <LazyAsyncComponent class="my-12" v-if="modalForm" :component-path="modalForm.path"
+                :component-props="getFormProps()" @pending-item="pendingItem" />
+        </UContainer>
     </UModal>
 </template>
