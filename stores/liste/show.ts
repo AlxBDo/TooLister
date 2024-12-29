@@ -41,8 +41,7 @@ export const useListeShowStore = defineStore("listeShow", {
     },
 
     async getStoredListById(id: number) {
-      const storedLists = await usePersister().getItem('listeList')
-      return storedLists && storedLists.items.find((list: Liste) => list?.id == id)
+      return await usePersister().getItem(`list_${id}`)
     },
 
     setData({ retrieved, isLoading, error, hubUrl }: FetchItemData<Liste>) {

@@ -18,9 +18,11 @@ export const itemState: Item = {
 export const persistedState = (
     persist: boolean = true,
     persistedPropertiesToEncrypt?: string[],
+    excludedKeys?: string[],
     isEncrypted = false
 
 ): IPersistedState => ({
+    excludedKeys,
     isEncrypted,
     persist,
     persistedPropertiesToEncrypt

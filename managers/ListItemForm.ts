@@ -48,30 +48,4 @@ export default class ListItemFormManager {
         return item
     }
 
-    static updateStore(list: TList, listItem: TListItem) {
-        const listStore = useListeStore()
-        listStore.setData(list)
-
-        if (listItem.category) {
-            if (typeof listItem.category === 'string') {
-                listItem.category = CategoryManager.populateCategory({ '@id': listItem.category })
-            } else if (typeof listItem.category === 'object' && (!listItem.category.id || !listItem.category.name)) {
-                listItem.category = { ...CategoryManager.populateCategory(listItem.category), ...listItem.category }
-            }
-        }
-
-        let items = [] as TListItem[]
-        if (list.selectedItems) { items = list.selectedItems }
-        if (list.unselectedItems) { items = [...items, list.unselectedItems] }
-
-        if (items.find((i: TListItem) => i['@id'] === listItem['@id'])) {
-            listStore.updateItems(listItem)
-        } else {
-            listStore.addItem(listItem)
-        }
-
-        const listListStore = useListeListStore()
-        listListStore.saveList(listStore.$state)
-    }
-
 }

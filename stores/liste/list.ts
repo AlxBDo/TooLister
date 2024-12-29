@@ -10,7 +10,6 @@ import type { StateTree, SubscriptionCallbackMutation } from "pinia"
 
 
 interface State extends IItemListState<Liste>, IPersistedState {
-  excludedKeys?: string[]
   listsGroupByCategory: IAnyObject;
   pendings?: Array<number | string>;
 }

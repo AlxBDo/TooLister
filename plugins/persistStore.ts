@@ -27,7 +27,8 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
     if (!state.persist) { return }
 
     const encrypt = state.hasOwnProperty('persistedPropertiesToEncrypt')
-    let persistedState = await usePersister().getItem(store.$id);
+    const storeName = store.hasOwnProperty('getStoreName') ? store.getStoreName() : store.$id
+    let persistedState = await usePersister().getItem(storeName);
 
     if (encrypt && persistedState) {
         persistedState = cryptState(persistedState, Crypt, true)
@@ -65,7 +66,7 @@ async function persist(state: StateTree, store: IAnyObject, Crypt: CRYPT) {
          */
 
         if (!areIdentical(newState, persistedState, excludedKeys)) {
-            usePersister().setItem(store.$id, newState)
+            usePersister().setItem(storeName, newState)
         }
     }
 }

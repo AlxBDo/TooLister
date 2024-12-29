@@ -28,7 +28,8 @@ export interface IItemListState<T> {
 }
 
 export interface IPersistedState {
-    isEncrypted?: boolean;
-    persist: boolean;
-    persistedPropertiesToEncrypt?: string[];
+    excludedKeys?: string[]
+    isEncrypted?: boolean
+    persist: boolean
+    persistedPropertiesToEncrypt?: string[]
 }
