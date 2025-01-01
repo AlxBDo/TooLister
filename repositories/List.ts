@@ -3,9 +3,12 @@ import listFactory from "~/factories/List";
 import type { FetchItemData } from "~/models/api";
 import type { Item } from "~/models/item";
 import type { Liste } from "~/models/liste";
+import type { ListUserRole } from "~/models/listUserRole";
 import type { ISearchCriteria } from "~/types";
 
-export interface IListSearchCriteria extends ISearchCriteria, Partial<Liste> { }
+export interface IListSearchCriteria extends ISearchCriteria, Omit<Liste, 'usersRole'> {
+    usersRole?: Partial<ListUserRole>
+}
 
 
 class ListRepository extends ItemRepository {

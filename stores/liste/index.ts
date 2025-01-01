@@ -21,7 +21,7 @@ export const useListeStore = defineStore("liste", {
         selectedItems: [],
         items: [],
         unselectedItems: [],
-        listUserRoles: []
+        usersRole: []
     }),
 
     actions: {
@@ -105,8 +105,8 @@ export const useListeStore = defineStore("liste", {
 
             if (list.items) { this.items = list.items }
 
-            if (list.listUserRoles) {
-                this.listUserRoles = list.listUserRoles
+            if (list.usersRole) {
+                this.usersRole = list.usersRole
             }
 
             if (list.name) { this.name = list.name }

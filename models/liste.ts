@@ -7,7 +7,7 @@ import type { ListUserRole } from "./listUserRole";
 export interface Liste extends Item {
   guest?: any;
   items?: TListItem[];
-  listUserRoles?: ListUserRole[];
+  usersRole?: ListUserRole[];
   name?: string;
   owner?: any;
   selectedItems?: TListItem[];

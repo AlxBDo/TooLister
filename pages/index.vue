@@ -16,6 +16,8 @@ const formId = 'listeForm'
 
 const listeListStore = useListeListStore()
 
+listeListStore.getLists({ usersRole: { user: { id: useConnectedUser()?.user?.id } } })
+
 const modalIsOpen = ref<boolean>(false)
 
 const listForm: TModalForm<Liste> = {

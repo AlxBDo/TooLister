@@ -1,10 +1,9 @@
 import { defineStore } from "pinia"
 import { fakeItemListActions, itemListState, persistedState } from "~/utils/store"
 import ListManager from "~/managers/List"
-import ListRepository from "~/repositories/List"
+import ListRepository, { type IListSearchCriteria } from "~/repositories/List"
 import type { Liste } from "~/models/liste"
 import type { IItemListState, IPersistedState } from "~/types/store"
-import type { IListSearchCriteria } from "~/repositories/List"
 import type { IAnyObject } from "~/types"
 import type { StateTree, SubscriptionCallbackMutation } from "pinia"
 
