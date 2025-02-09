@@ -18,7 +18,7 @@ function getToken() {
     throw new Error('Token isn\'t defined.')
   }
 
-  return token.value;
+  return `Bearer ${token.value}`;
 }
 
 async function useApi<T>(path: string, options: UseFetchOptions<T>) {

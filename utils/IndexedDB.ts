@@ -3,12 +3,6 @@ interface ObjectStoreCreationOptions {
     keyPath?: string
 }
 
-interface IOnRequestCallbackParamsProperties {
-    callback?: Function
-    message?: string
-    data?: any
-}
-
 type TEventFunction = (event?: any) => void
 
 interface IOnRequestCallbackParams {
@@ -22,6 +16,7 @@ type ObjectItemKey = string | number
 
 export default class IndexedDB {
     private _db?: IDBDatabase
+    private _localStorageVersionKey: string = 'IDBVersion'
     private _name: string = 'appListDB'
     private _objectStore?: IDBObjectStore
     private _objectStoreOptions?: ObjectStoreCreationOptions = {
@@ -29,7 +24,7 @@ export default class IndexedDB {
     }
     private _objectStoreName: string
     private _transactionMode: IDBTransactionMode = 'readwrite'
-    private _version: number = 3
+    private _version: number
 
     constructor(
         objectStoreName: string,
@@ -37,6 +32,8 @@ export default class IndexedDB {
         transactionMode?: IDBTransactionMode
     ) {
         this._objectStoreName = objectStoreName
+
+        this._version = this.getStoredVersionNumber()
 
         if (objectStoreCreationOptions) {
             this._objectStoreOptions = objectStoreCreationOptions
@@ -59,6 +56,12 @@ export default class IndexedDB {
         }
 
         this.open({ success })
+    }
+
+    private createObjectStore(): void {
+        if (this._db && !this._db.objectStoreNames.contains(this._name)) {
+            this._db.createObjectStore(this._objectStoreName, this._objectStoreOptions);
+        }
     }
 
     public deleteObjectStore(): void {
@@ -85,7 +88,7 @@ export default class IndexedDB {
                 }
             }
 
-            this.open({ success })
+            this.open({ success });
         })
     }
 
@@ -109,13 +112,16 @@ export default class IndexedDB {
         })
     }
 
-    private onError(error: any, callback?: Function): void {
-        console.log('IndexDB ERROR', error)
-        callback && callback()
+    private getStoredVersionNumber(): number {
+        if (!localStorage) { return 1 }
+
+        const version = localStorage.getItem(this._localStorageVersionKey)
+        return version ? parseInt(version) : 1
     }
 
-    private onSuccess(callback: Function, data?: any): void {
-        callback(data)
+    private onError(error: any, callback?: Function): void {
+        console.log('IndexDB ERROR', error)
+        callback && callback(error)
     }
 
     private open(eventCallback?: IOnRequestCallbackParams): IDBOpenDBRequest {
@@ -126,17 +132,22 @@ export default class IndexedDB {
         };
 
         const handleSuccess = (successCallback: () => void) => {
-            setDb();
+            try {
+                setDb();
 
-            if (!this._db) return;
+                if (!this._db) return;
 
-            const transaction = this._db.transaction(this._objectStoreName, this._transactionMode);
-            transaction.onerror = () => this.onError(transaction.error);
+                const transaction = this._db.transaction(this._objectStoreName, this._transactionMode);
 
-            this._objectStore = transaction.objectStore(this._objectStoreName);
+                transaction.onerror = () => this.onError(transaction.error);
 
-            if (this._objectStore) {
-                successCallback();
+                this._objectStore = transaction.objectStore(this._objectStoreName);
+
+                if (this._objectStore) {
+                    successCallback();
+                }
+            } catch (error) {
+                useConsole().log('indexedDB open handleSuccess error', [error], { bgColor: 'darkred', icon: '☁️❕' });
             }
         };
 
@@ -154,12 +165,35 @@ export default class IndexedDB {
         }
 
         const error = () => {
-            this.onError(request.error, eventCallback?.error);
+            const errorCallback = (error: any) => {
+                if (error?.name === 'VersionError') {
+                    this._version++;
+                    this.saveVersion()
+                    this.open(eventCallback)
+                    return
+                }
+                eventCallback?.error && eventCallback.error(error);
+            }
+            this.onError(request.error, errorCallback);
         };
 
         eventCallback && this.openRequestEventsHandler(request, { ...eventCallback, error });
 
         return request;
+    }
+
+    private openRequestEventsHandler(
+        request: IDBOpenDBRequest,
+        params: IOnRequestCallbackParams
+    ): void {
+        this.requestEventsHandler(request, params)
+        if (params.upgrade) {
+            request.onupgradeneeded = params.upgrade
+        }
+    }
+
+    private onSuccess(callback: Function, data?: any): void {
+        callback(data)
     }
 
     public removeItem(key: ObjectItemKey): void {
@@ -215,14 +249,9 @@ export default class IndexedDB {
         }
     }
 
-    private openRequestEventsHandler(
-        request: IDBOpenDBRequest,
-        params: IOnRequestCallbackParams
-    ): void {
-        this.requestEventsHandler(request, params)
-        if (params.upgrade) {
-            request.onupgradeneeded = params.upgrade
-        }
+    private saveVersion(): void {
+        if (!localStorage) { return }
+        localStorage.setItem(this._localStorageVersionKey, this._version.toString())
     }
 
     public setItem(item: Object, index?: string[]): void {
@@ -243,11 +272,7 @@ export default class IndexedDB {
             }
         };
 
-        const upgrade = () => {
-            if (this._db && !this._db.objectStoreNames.contains(this._name)) {
-                this._db.createObjectStore(this._objectStoreName, this._objectStoreOptions);
-            }
-        };
+        const upgrade = () => this.createObjectStore;
 
         this.open({ success, upgrade });
     }

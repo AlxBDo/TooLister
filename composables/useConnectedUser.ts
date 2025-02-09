@@ -4,7 +4,7 @@ import useNotification from "./useNotification";
 import type { User } from "~/models/user";
 
 export default () => {
-    const user = useUserStore();
+    const user = useUserStore('connectedUser');
     user.persistStore();
     const auth = useAuth();
     const notification = useNotification();

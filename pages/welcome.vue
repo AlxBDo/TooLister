@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const firstname = computed(() => useConnectedUser().user?.firstname)
+const password = computed(() => useConnectedUser().user?.password)
 </script>
 
 <template>
     <main>
         <h1 class="my-6 text-center text-2xl">Bienvenue {{ firstname }}</h1>
         <UContainer>
-            <p v-if="firstname">Connexion en cours...</p>
+            <p v-if="firstname && password">Connexion en cours...</p>
             <div v-else id="not-connected">
                 <p class="mb-4">Avec TooLister, liste tout !</p>
                 <p class="mb-4">

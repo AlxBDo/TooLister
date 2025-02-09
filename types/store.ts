@@ -3,7 +3,13 @@ import type { ISearchParamObject } from ".";
 import type { Item } from "~/models/item";
 import type { View } from "~~/types/view";
 import type ItemRepository from "~/repositories/Item";
+import type { Store } from "pinia";
 
+
+
+/**
+ * - -- | ItemList Store | -- -
+ */
 
 export interface IItemListActions {
     addItem: <T extends Item>(item: T) => void,
@@ -27,9 +33,35 @@ export interface IItemListState<T> {
     repository?: ItemRepository
 }
 
+
+/**
+ * - -- | Persit Store | -- -
+ */
+
 export interface IPersistedState {
     excludedKeys?: string[]
     isEncrypted?: boolean
     persist: boolean
     persistedPropertiesToEncrypt?: string[]
 }
+
+
+/**
+ * - -- | Extends Store | -- -
+ */
+
+export interface IExtendedState {
+    isExtended?: boolean | Ref<boolean | undefined>
+    isOptionApi?: boolean | Ref<boolean | undefined>
+    parentsStores?: Store[] | Ref<Store[]>
+}
+
+export interface IExtendedStore {
+    init: () => void
+}
+
+export type TExtendedState<T, I> = T & I & IExtendedState
+
+export type TExtendedStore<TStore, TState> = (args?: any) => Store & TStore & TState & IExtendedStore
+
+export type TStoreExtended<TStore, TState> = Store & TStore & TState & IExtendedStore

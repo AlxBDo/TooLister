@@ -1,7 +1,9 @@
+import type { Store } from "pinia"
 import type { FetchAllData } from "~/models/api"
 import type { Item } from "~/models/item"
 import type { ISearchParamObject } from "~/types"
-import type { IItemListActions, IItemListState, IPersistedState } from "~/types/store"
+import type { IExtendedState, IItemListActions, IItemListState, IPersistedState } from "~/types/store"
+
 
 export const itemListState = <T>(): IItemListState<T> => ({
     items: [] as T[],

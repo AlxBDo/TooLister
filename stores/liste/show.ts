@@ -30,8 +30,10 @@ export const useListeShowStore = defineStore("listeShow", {
         )
 
         ListRepository.getListById(id).then((fetchResult) => {
-          this.setData(fetchResult)
-          if (this.isLoading) { this.isLoading = false }
+          if (!this.list?.id || this.list?.id === id) {
+            this.setData(fetchResult)
+            if (this.isLoading) { this.isLoading = false }
+          }
         })
       }
 

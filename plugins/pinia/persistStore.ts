@@ -94,7 +94,8 @@ function populateState(state: StateTree, persistedState?: StateTree) {
     }, {} as StateTree)
 }
 
-function PersistPiniaStoreState({ store }: PiniaPluginContext) {
+export function persistStore(context: PiniaPluginContext) {
+    const { store } = context
     if (store.$state.hasOwnProperty('persist')) {
         const Crypt = new CRYPT(useRuntimeConfig().public.cryptKey as string, useRuntimeConfig().public.cryptIv as string)
         persist(toRaw(store?.$state), store, Crypt)
@@ -114,11 +115,12 @@ function PersistPiniaStoreState({ store }: PiniaPluginContext) {
     }
 }
 
-
+/**
 export default defineNuxtPlugin({
     name: 'persistStore',
-    dependsOn: ['itemListStore'],
+    dependsOn: ['extendsPiniaStore'],
     async setup({ $pinia }) {
         ($pinia as Pinia).use(PersistPiniaStoreState)
     }
 })
+ */

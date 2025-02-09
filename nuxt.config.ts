@@ -21,7 +21,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-  plugins: ['~/plugins/persistStore'],
 
   postcss: {
     plugins: {

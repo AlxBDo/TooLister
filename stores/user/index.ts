@@ -5,9 +5,9 @@ import type { IPersistedState } from '~/types/store';
 
 interface State extends User, IPersistedState { }
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
     state: (): State => ({
-        ...persistedState(false, ['email', 'password', 'username'], false),
+        ...persistedState(false, ['email', 'password', 'username']),
         ...itemState,
         email: undefined,
         firstname: undefined,
@@ -20,20 +20,6 @@ export const useUserStore = defineStore('user', {
     }),
 
     actions: {
-        clearUser() {
-            this['@id'] = undefined;
-            this.id = undefined;
-            this.email = undefined;
-            this.firstname = undefined;
-            this.listes = undefined;
-            this.password = undefined;
-            this.persist = false;
-            this.roles = undefined;
-            this.salt = undefined;
-            this.userIdentifier = undefined;
-            this.username = undefined;
-        },
-
         persistStore() {
             this.persist = true;
         },
@@ -55,4 +41,4 @@ export const useUserStore = defineStore('user', {
             if (user.username) { this.username = user.username; }
         }
     }
-});
+})();

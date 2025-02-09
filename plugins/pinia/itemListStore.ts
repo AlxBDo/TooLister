@@ -12,7 +12,7 @@ type TItemListActionsName = keyof IItemListActions
 
 const logStyleOptions = { bgColor: 'brown', icon: '🛠️' }
 
-function itemListStorePlugin({ store }: PiniaPluginContext) {
+export function itemListStore({ store }: PiniaPluginContext) {
     if (store.$id.substring(store.$id.length - 4) === 'List') {
         if (store.$state.persist && (!store.$state.excludedKeys || !Array.isArray(store.$state.excludedKeys))) {
             store.$state.excludedKeys = [
@@ -127,9 +127,11 @@ function itemListStorePlugin({ store }: PiniaPluginContext) {
     }
 }
 
+/** 
 export default defineNuxtPlugin({
     name: 'itemListStore',
     async setup({ $pinia }) {
         ($pinia as Pinia).use(itemListStorePlugin)
     }
 })
+    */
