@@ -1,11 +1,11 @@
 import type { User } from "~/models/user"
 import { useItemStore } from "./item"
-import type { TExtendedState } from "~/types/store";
-import type { Item } from "~/models/item"
+import type { TExtendedState } from "~/types/store"
 import { defineExtendedStoreId } from "./defineExtendedStoreId"
-import type { Store } from "pinia";
-import type { IAnyObject } from "~/types";
-import { getParentStorePropertyValue } from "~/plugins/pinia/extendsStore/parentStore";
+import { getParentStorePropertyValue } from "~/plugins/pinia/extendsStore/parentStore"
+import { extendedState } from "~/plugins/pinia/extendsStore/extendedState"
+import type { Contact } from "~/models/contact"
+import { useContactStore } from "./contact"
 
 
 export interface IUserStore {
@@ -15,13 +15,14 @@ export interface IUserStore {
     user: User
 }
 
-export type TUserState = TExtendedState<Item, User>
+export type TUserState = TExtendedState<Contact, User>
 
 export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
     state: (): TUserState => ({
-        parentsStores: [useItemStore(defineExtendedStoreId(id ?? 'user', 'item'))],
-        firstname: undefined,
-        email: undefined,
+        ...extendedState(
+            [useContactStore(defineExtendedStoreId(id ?? 'user', 'contact'))],
+            { actionsToExtends: ['setData'] }
+        ),
         listes: undefined,
         password: undefined,
         roles: undefined,
@@ -33,10 +34,8 @@ export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
 
     getters: {
         user: (state) => ({
-            '@id': state.parentsStores && getParentStorePropertyValue('@id', 0, state.parentsStores),
-            id: state.parentsStores && getParentStorePropertyValue('id', 0, state.parentsStores),
-            email: state.email,
-            firstname: state.firstname,
+            email: getParentStorePropertyValue('email', 0, state.parentsStores),
+            firstname: getParentStorePropertyValue('firstname', 0, state.parentsStores),
             listes: state.listes,
             password: state.password,
             roles: state.roles,

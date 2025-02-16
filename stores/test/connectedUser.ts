@@ -1,13 +1,16 @@
 import { extendedState } from "~/plugins/pinia/extendsStore/extendedState";
 import { defineExtendedStoreId } from "./defineExtendedStoreId";
 import { useUserStore, type IUserStore, type TUserState } from "./user";
-import type { TExtendedStore } from "~/types/store";
+import type { IPersistedStore, TExtendedStore } from "~/types/store";
 
 
-export const useConnectedUserStore: TExtendedStore<Partial<IUserStore>, TUserState> = defineStore('connectedUserTest', () => {
-    const { isExtended, parentsStores } = extendedState(
+export const useConnectedUserStore: TExtendedStore<Partial<IUserStore & IPersistedStore>, TUserState> = defineStore('connectedUserTest', () => {
+    const { excludedKeys, isExtended, parentsStores, persist, persistedPropertiesToEncrypt } = extendedState(
         [useUserStore(defineExtendedStoreId('connected', 'user'))],
-        false
+        {
+            isOptionApi: false,
+            persist: { persistedPropertiesToEncrypt: ref(['email', 'password', 'username']) }
+        }
     )
 
     function init() {
@@ -17,9 +20,12 @@ export const useConnectedUserStore: TExtendedStore<Partial<IUserStore>, TUserSta
     }
 
     return {
+        excludedKeys,
         isExtended,
         init,
-        parentsStores
+        parentsStores,
+        persist,
+        persistedPropertiesToEncrypt
     }
 
     /**

@@ -9,7 +9,7 @@ import { useListeListStore } from '~/stores/liste/list';
 import useModalForm from '~/composables/useModalForm';
 import { useUserStore } from '~/stores/test/user';
 import { useConnectedUserStore } from '~/stores/test/connectedUser';
-import type { TStoreExtended } from "~/types/store";
+import type { IPersistedStore, TStoreExtended } from "~/types/store";
 import type { IUserStore, TUserState } from '~/stores/test/user';
 
 const userStore = useUserStore()
@@ -18,13 +18,15 @@ userStore.setData({ firstname: 'John', id: 888, email: 'test@mail.fr' })
 
 useConsole().log('userStore', [userStore, 'user id :', userStore.id])
 
-const connectedUserStore = useConnectedUserStore() as TStoreExtended<IUserStore, TUserState>
+const connectedUserStore = useConnectedUserStore() as TStoreExtended<IUserStore & IPersistedStore, TUserState>
 
 connectedUserStore.init()
 
 connectedUserStore.id = 111
 
 connectedUserStore.setData({ firstname: 'Joe', id: 111, email: 'joe@mail.fr', password: 'mYp@ssw0rd' })
+
+connectedUserStore.persistState()
 
 useConsole().log('connectedUserStore', [connectedUserStore.isPassword('mYp@sswdsdsqd0rd'), connectedUserStore.user, connectedUserStore])
 

@@ -22,11 +22,23 @@ const styles = {
 }
 
 const methods = {
-    log: (message: any, args?: any[], styleOptions?: IStyleOptions) => {
+    log: (message: string, args?: any[], styleOptions?: IStyleOptions) => {
         const logStyle = styleOptions ? style(styleOptions.bgColor, styleOptions.color) : styles.log
         const icon = styleOptions?.icon ?? '👉🏼'
 
-        console.log('%s%c%s', icon, logStyle, message, ...(args ?? []))
+        const separator = Array.from(message).reduce((acc: string, curr: string) => `-${acc}`, '-------')
+
+        message = `${separator} 
+- ${icon} ${message} - 
+${separator}
+`
+
+        console.log(
+            '%c%s',
+            logStyle,
+            message,
+            ...(args ?? [])
+        )
     },
     error: (message: any) => console.error(message),
     warn: (message: any) => console.warn(message),

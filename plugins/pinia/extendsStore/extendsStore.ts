@@ -1,8 +1,12 @@
 import type { PiniaPluginContext, StateTree, Store } from "pinia";
 import type { IAnyObject } from "~/types";
+import { addPropertiesToState } from "../augmentPinia/augmentState";
+import { augmentStore } from "../persistStore";
+import { isOptionApi } from "../augmentPinia/augmentStore";
+import type { IPersistedState, IPersistedStore, TStoreExtended } from "~/types/store";
 
 
-const logStyleOptions = { bgColor: 'black', icon: '☁️' }
+const logStyleOptions = { bgColor: 'green', icon: '☁️' }
 
 
 /**
@@ -58,12 +62,19 @@ function duplicateStore(storeToExtend: IAnyObject, extendedStore: IAnyObject): v
         const typeOfProperty = typeof storeToExtend[key]
 
         if (typeOfProperty === 'function') {
-            if (extendedStore.hasOwnProperty(key)) {
+            if (
+                extendedStore.hasOwnProperty(key) &&
+                extendedStore?.actionsToExtends &&
+                extendedStore?.actionsToExtends.includes(key)
+            ) {
                 extendsAction(storeToExtend, extendedStore, key)
             } else {
                 extendedStore[key] = storeToExtend[key];
             }
-        } else if (typeOfProperty === 'undefined' || typeOfProperty === 'object') {
+        } else if (
+            !extendedStore.hasOwnProperty(key) &&
+            (typeOfProperty === 'undefined' || typeOfProperty === 'object')
+        ) {
             extendedStore[key] = createComputed(storeToExtend, key)
         }
     })
@@ -87,15 +98,56 @@ function extendsStateToComputed(storeToExtend: IAnyObject, extendedStore: IAnyOb
  * @param {PiniaPluginContext} context 
  */
 export function extendsStore({ store }: PiniaPluginContext): void {
-    if (store.$state.hasOwnProperty('parentsStores') && !store.$state.isExtended) {
+    if (store.$state.hasOwnProperty('parentsStores')) {
         const storeToExtend: Store[] = store.$state.parentsStores
 
         if (!storeToExtend || !storeToExtend.length) { return }
 
         storeToExtend.forEach((ste: Store) => {
+            if (store.$state.hasOwnProperty('persist')) {
+                store.$state.parentsStores.forEach((parentStore: Store) => {
+                    if (!parentStore.$state.hasOwnProperty('persist')) {
+                        persistChildStore({ store: parentStore } as PiniaPluginContext, store.$state)
+                    }
+                })
+            }
+
             duplicateStore(ste, store)
             extendsStateToComputed(ste, store)
         })
+
         store.$state.isExtended = true
     }
+}
+
+/**
+ * Add state properties necessary to persist
+ * @param {StateTree} state 
+ * @param {StateTree} childStoreState 
+ */
+function persistChildStore({ store }: PiniaPluginContext, childStoreState: StateTree) {
+    const state = store.$state
+    state.persist = true
+
+    addPropertiesToState(
+        ['persistedPropertiesToEncrypt', 'excludedKeys'],
+        state,
+        isOptionApi({ store } as PiniaPluginContext),
+        childStoreState
+    )
+
+    augmentStore({ store } as PiniaPluginContext)
+
+    runPersist(store as TStoreExtended<IPersistedStore, IPersistedState>)
+
+    if (store.$state.hasOwnProperty('parentsStores')) {
+        store.$state.parentsStores.forEach((parentStore: Store) => persistChildStore(
+            { store: parentStore } as PiniaPluginContext, store.$state
+        ))
+    }
+}
+
+function runPersist(store: TStoreExtended<IPersistedStore, IPersistedState>) {
+    store.remember()
+    store.watch()
 }

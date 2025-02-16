@@ -2,9 +2,12 @@ import { useUserStore } from "~/stores/user";
 import type { LoginSubmitProps } from "~/types/auth";
 import useNotification from "./useNotification";
 import type { User } from "~/models/user";
+import type { TStoreExtended } from "~/types/store";
+import type { IUserStore, TUserState } from "~/stores/test/user";
+import type { StateTree } from "pinia";
 
 export default () => {
-    const user = useUserStore('connectedUser');
+    const user = useUserStore('connectedUser')
     user.persistStore();
     const auth = useAuth();
     const notification = useNotification();

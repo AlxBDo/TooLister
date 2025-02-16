@@ -4,6 +4,7 @@ import type { Item } from "~/models/item";
 import type { View } from "~~/types/view";
 import type ItemRepository from "~/repositories/Item";
 import type { Store } from "pinia";
+import type { IPersistOptions } from "~/plugins/pinia/extendsStore/extendedState";
 
 
 
@@ -45,12 +46,19 @@ export interface IPersistedState {
     persistedPropertiesToEncrypt?: string[]
 }
 
+export interface IPersistedStore {
+    persistState: () => void
+    remember: () => void
+    watch: () => void
+}
+
 
 /**
  * - -- | Extends Store | -- -
  */
 
-export interface IExtendedState {
+export interface IExtendedState extends IPersistOptions {
+    actionsToExtends?: string[] | Ref<string[] | undefined>
     isExtended?: boolean | Ref<boolean | undefined>
     isOptionApi?: boolean | Ref<boolean | undefined>
     parentsStores?: Store[] | Ref<Store[]>

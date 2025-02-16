@@ -1,4 +1,3 @@
-import { object } from "yup"
 import type { IAnyObject } from "~/types"
 
 const logStyleOptions = {
@@ -6,6 +5,13 @@ const logStyleOptions = {
     icon: '☢️'
 }
 
+/**
+ * Compares objects to determine if they are identical
+ * @param {object} object1 
+ * @param {object} object2 
+ * @param {array} excludedKeys - name of properties not to be compared
+ * @returns {boolean} areIdentical
+ */
 export const areIdentical = (object1: IAnyObject, object2: IAnyObject, excludedKeys?: string[]) => {
     if (!object2 || (!excludedKeys && object1.length !== object2.length)) {
         return false
@@ -25,22 +31,11 @@ export const areIdentical = (object1: IAnyObject, object2: IAnyObject, excludedK
                         acc = false
                     }
                 })
-
-                /**
-                acc = Object.keys(object1[key]).reduce((acc, curr) => {
-                    if (acc) {
-                        acc = (object1[key][curr] && object2[key][curr] && (
-                            typeof object1[key][curr] === 'object' || Array.isArray(object1[key][curr])
-                        ) ? areIdentical(object1[key][curr], object2[key][curr])
-                            : object1[key][curr] === object2[key][curr]) as boolean
-                    }
-                    return acc
-                }, true)
-                */
             } else if (typeof object1[key] === 'object') {
                 acc = areIdentical(object1[key], object2[key])
             } else { acc = object1[key] === object2[key] }
         }
+
         return acc
     }, true)
 }

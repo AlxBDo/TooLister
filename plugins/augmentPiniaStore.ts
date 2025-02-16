@@ -1,18 +1,18 @@
 import type { Pinia, PiniaPluginContext } from "pinia"
 import { extendsStore } from "./pinia/extendsStore/extendsStore";
 import { itemListStore } from "./pinia/itemListStore";
-import { persistStore } from "./pinia/persistStore";
+import { persistStorePlugin } from "./pinia/persistStore";
 
 
-function extendsPiniaStore(context: PiniaPluginContext) {
+function augmentPiniaStore(context: PiniaPluginContext) {
     itemListStore(context)
     extendsStore(context)
-    persistStore(context)
+    persistStorePlugin(context)
 }
 
 export default defineNuxtPlugin({
-    name: 'extendsPiniaStore',
+    name: 'augmentPiniaStore',
     async setup({ $pinia }) {
-        ($pinia as Pinia).use(extendsPiniaStore)
+        ($pinia as Pinia).use(augmentPiniaStore)
     }
 })

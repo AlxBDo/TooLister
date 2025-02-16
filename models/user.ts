@@ -1,8 +1,6 @@
-import type { Item } from "../models/item";
+import type { Contact } from "./contact";
 
-export interface User extends Item {
-  firstname?: string;
-  email?: string;
+export interface User extends Contact {
   listes?: any;
   password?: string;
   roles?: string;

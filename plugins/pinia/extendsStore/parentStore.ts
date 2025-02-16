@@ -49,8 +49,10 @@ export function getParentStoreByIndex(parentStoreIndex: number, parentsStores: S
 export function getParentStorePropertyValue(
     propertyName: string,
     parentStore: IAnyObject | string | number | undefined,
-    parentsStores: Store[]
+    parentsStores?: Store[]
 ): any {
+    if (!parentsStores) { return }
+
     if (typeof parentStore === 'string' || typeof parentStore === 'number') {
         parentStore = getParentStore(parentStore, parentsStores)
     }
