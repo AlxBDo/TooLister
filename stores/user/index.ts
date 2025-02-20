@@ -1,12 +1,20 @@
 import { defineStore } from 'pinia';
 import { itemState, persistedState } from '~/utils/store';
 import type { User } from "~~/models/user";
-import type { IPersistedState } from '~/types/store';
+import type { IExtendedState, IPersistedState, IPersistedStore, TExtendedStore } from '~/types/store';
 
-interface State extends User, IPersistedState { }
 
-export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
-    state: (): State => ({
+
+export interface IUserStore {
+    persistStore: () => void
+    stateIsEmpty: () => boolean
+    updateUser: (user: User) => void
+}
+
+export interface IUserStoreState extends User, IExtendedState { }
+
+export const useUserStore: TExtendedStore<Partial<IUserStore & IPersistedStore>, IUserStoreState> = (id?: string) => defineStore(id ?? 'user', {
+    state: (): IUserStoreState => ({
         ...persistedState(false, ['email', 'password', 'username']),
         ...itemState,
         email: undefined,
@@ -20,6 +28,9 @@ export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
     }),
 
     actions: {
+        init() {
+            this.isExtended = false
+        },
         persistStore() {
             this.persist = true;
         },

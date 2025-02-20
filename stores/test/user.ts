@@ -1,5 +1,4 @@
 import type { User } from "~/models/user"
-import { useItemStore } from "./item"
 import type { TExtendedState } from "~/types/store"
 import { defineExtendedStoreId } from "./defineExtendedStoreId"
 import { getParentStorePropertyValue } from "~/plugins/pinia/extendsStore/parentStore"
@@ -34,14 +33,8 @@ export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
 
     getters: {
         user: (state) => ({
-            email: getParentStorePropertyValue('email', 0, state.parentsStores),
-            firstname: getParentStorePropertyValue('firstname', 0, state.parentsStores),
-            listes: state.listes,
-            password: state.password,
-            roles: state.roles,
-            sharedLists: state.sharedLists,
-            userIdentifier: state.userIdentifier,
-            username: state.username
+            ...getParentStorePropertyValue('contact', 0, state.parentsStores),
+            ...state
         })
     },
 

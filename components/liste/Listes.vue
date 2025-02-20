@@ -1,21 +1,34 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
-import { useListeListStore } from "~/stores/liste/list";
+import { useListeListStore, type IListeListState, type IListeListStore } from "~/stores/liste/list";
 import ItemCard from "../common/ItemCard.vue";
 import ListManager from "~/managers/List";
 import type { Liste } from "~/models/liste";
 import type { IItem } from "~/types";
 import { mapValueLabelObjects } from "~/utils/object";
 import { capitalize } from "vue";
+import type { AugmentOptionApiStore } from "~/types/store";
+import type { ToRefs } from "vue";
+import type { _StoreWithGetters, _StoreWithState, PiniaCustomStateProperties } from "pinia";
 
 
 const router = useRouter()
 
-const listeListStore = useListeListStore();
+const listeListStore = useListeListStore() as AugmentOptionApiStore<IListeListStore, IListeListState>;
+listeListStore.remember()
+
+type StoreToRefs = PiniaCustomStateProperties<IListeListState>
+    & _StoreWithGetters<{ isLoading: boolean, listsGroupByCategory: any }>
+    & _StoreWithState<'ListeList', IListeListState, { isLoading: boolean, listsGroupByCategory: any }, IListeListStore>
+
 
 const { isLoading, listsGroupByCategory } = storeToRefs(listeListStore)
+//const isLoading = ref(listeListStore.isLoading)
+//const listsGroupByCategory = ref(listeListStore.listsGroupByCategory)
 
 listeListStore.getListsGroupByCategory()
+
+useConsole().log('Listes.vue', [listsGroupByCategory, listeListStore])
 
 const listCatgories = computed(() => {
     return listsGroupByCategory.value && mapValueLabelObjects(

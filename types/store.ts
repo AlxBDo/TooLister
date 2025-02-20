@@ -3,9 +3,21 @@ import type { ISearchParamObject } from ".";
 import type { Item } from "~/models/item";
 import type { View } from "~~/types/view";
 import type ItemRepository from "~/repositories/Item";
-import type { Store } from "pinia";
+import type { _StoreWithGetters, PiniaCustomProperties, PiniaCustomStateProperties, StateTree, Store, StoreGeneric, StoreGetters, SubscriptionCallback } from "pinia";
 import type { IPersistOptions } from "~/plugins/pinia/extendsStore/extendedState";
+import type { ToRefs } from "vue";
 
+
+export type AugmentStore<T> = Store & T
+
+export type AugmentOptionApiStore<TStore, TState> = Store & TStore & TState & TOptionApiStore<TState> & PiniaCustomProperties & PiniaCustomStateProperties & _StoreWithGetters<TState>
+
+type TOptionApiStore<TState> = {
+    $patch: (item: Partial<TState>) => void
+    $reset: () => void
+    $state: TState
+    $subscribe: (callback: SubscriptionCallback<TState>) => void
+}
 
 
 /**
@@ -64,12 +76,14 @@ export interface IExtendedState extends IPersistOptions {
     parentsStores?: Store[] | Ref<Store[]>
 }
 
-export interface IExtendedStore {
+export interface IExtendedStore extends PiniaCustomProperties {
     init: () => void
 }
 
 export type TExtendedState<T, I> = T & I & IExtendedState
 
-export type TExtendedStore<TStore, TState> = (args?: any) => Store & TStore & TState & IExtendedStore
+export type TExtendedStore<TStore, TState> = (args?: any) => Store & TStore & TState & PiniaCustomProperties
 
-export type TStoreExtended<TStore, TState> = Store & TStore & TState & IExtendedStore
+export type TExtendedStoreOptionApi<TStore, TState> = (args?: any) => Store & TStore & TState & PiniaCustomProperties & TOptionApiStore<TState>
+
+export type TStoreExtended<TStore, TState> = Store & TStore & TState & PiniaCustomProperties

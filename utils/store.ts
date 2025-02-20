@@ -2,7 +2,7 @@ import type { Store } from "pinia"
 import type { FetchAllData } from "~/models/api"
 import type { Item } from "~/models/item"
 import type { ISearchParamObject } from "~/types"
-import type { IExtendedState, IItemListActions, IItemListState, IPersistedState } from "~/types/store"
+import type { IExtendedState, IItemListActions, IItemListState, IPersistedState, IPersistedStore } from "~/types/store"
 
 
 export const itemListState = <T>(): IItemListState<T> => ({
@@ -41,4 +41,10 @@ export const fakeItemListActions: IItemListActions = {
     setItems: <T>(items: T[]) => false,
     setLoading: (isLoading: boolean) => false,
     updateItem: <T extends Item>(updatedItem: T, persist?: boolean) => false
+}
+
+export const fakePersistActions: IPersistedStore = {
+    persistState: () => undefined,
+    remember: () => undefined,
+    watch: () => undefined
 }

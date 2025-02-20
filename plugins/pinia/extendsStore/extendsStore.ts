@@ -9,6 +9,8 @@ import type { IPersistedState, IPersistedStore, TStoreExtended } from "~/types/s
 const logStyleOptions = { bgColor: 'green', icon: '☁️' }
 
 
+const extendedActions = ['watch']
+
 /**
  * Create computed function to extend store property
  * @param {IAnyObject} store 
@@ -63,9 +65,12 @@ function duplicateStore(storeToExtend: IAnyObject, extendedStore: IAnyObject): v
 
         if (typeOfProperty === 'function') {
             if (
-                extendedStore.hasOwnProperty(key) &&
-                extendedStore?.actionsToExtends &&
-                extendedStore?.actionsToExtends.includes(key)
+                extendedStore.hasOwnProperty(key) && (
+                    extendedActions.includes(key) || (
+                        extendedStore?.actionsToExtends &&
+                        extendedStore?.actionsToExtends.includes(key)
+                    )
+                )
             ) {
                 extendsAction(storeToExtend, extendedStore, key)
             } else {
@@ -149,5 +154,5 @@ function persistChildStore({ store }: PiniaPluginContext, childStoreState: State
 
 function runPersist(store: TStoreExtended<IPersistedStore, IPersistedState>) {
     store.remember()
-    store.watch()
+    store.watch && store.watch()
 }

@@ -1,4 +1,4 @@
-import type { Pinia, PiniaPluginContext, StateTree, Store, SubscriptionCallbackMutation } from "pinia";
+import type { PiniaPluginContext, StateTree, Store, SubscriptionCallbackMutation } from "pinia";
 import type { IAnyObject } from "~/types";
 import { areIdentical } from "~/utils/validation/object";
 import CRYPT from "~/utils/Crypt";
@@ -42,16 +42,10 @@ export function augmentStore({ store }: PiniaPluginContext) {
 
 
     // Augment Store
+    store.persistState = () => persist(state, store)
+    store.remember = () => remember(store)
 
-    if (!store.persistState) {
-        store.persistState = () => persist(state, store)
-    }
-
-    if (!store.remember) {
-        store.remember = () => remember(store)
-    }
-
-    if (!store.watch && !storesWatched.includes(getStoreName(store))) {
+    if (!storesWatched.includes(getStoreName(store))) {
         store.watch = () => storeSubscription({ store } as PiniaPluginContext)
     }
 }
@@ -127,8 +121,8 @@ async function persist(state: StateTree, store: IAnyObject) {
 
     const newState = populateState(state, persistedState)
 
-    /**
-     useConsole().log(
+    /** 
+    useConsole().log(
         `persistStore persist ${getStoreName(store)}`,
         [
             'areIdentical',
@@ -138,7 +132,9 @@ async function persist(state: StateTree, store: IAnyObject) {
             'persistedState',
             persistedState,
             'state',
-            state
+            state,
+            'store',
+            store
         ],
         logStyleOptions
     )

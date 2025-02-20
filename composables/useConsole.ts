@@ -28,9 +28,9 @@ const methods = {
 
         const separator = Array.from(message).reduce((acc: string, curr: string) => `-${acc}`, '-------')
 
-        message = `${separator} 
+        message = `${separator}  
 - ${icon} ${message} - 
-${separator}
+${separator}  
 `
 
         console.log(
