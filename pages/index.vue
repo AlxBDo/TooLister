@@ -14,10 +14,10 @@ import { useListsStore } from '~/stores/test/lists';
 import type { CollectionStoreMethods } from '~/stores/test/collection';
 
 
+/** 
 const connectedUserStore = useConnectedUserStore() as TStoreExtended<IUserStore & IPersistedStore, TUserState>
 
 connectedUserStore.remember()
-/** 
 connectedUserStore.id = 111
 
 connectedUserStore.setData({ firstname: 'Joe', id: 111, email: 'joe@mail.fr', password: 'mYp@ssw0rd' })
@@ -27,14 +27,28 @@ connectedUserStore.persistState()
 useConsole().log('connectedUserStore', [connectedUserStore.isPassword('mYp@sswdsdsqd0rd'), connectedUserStore.user, connectedUserStore])
 
 connectedUserStore.modifyPassword('mYp@ssw0rd', 'mYn€wp@sswd0rd')
-*/
+
 useConsole().log('connectedUserStore', [connectedUserStore.user])
+*/
 
 const listsStore = useListsStore() as TStoreExtended<CollectionStoreMethods, IItemListState<Liste>>
 
-listsStore.addItem({ id: 999, name: 'My first list', type: '0' })
+listsStore.setItems([
+  { id: 1, name: 'My first list', type: '0' },
+  { id: 2, name: 'My second list', type: '1' },
+  { id: 3, name: 'My third list', type: '2' },
+  { id: 4, name: 'My fourth list', type: '3' }
+])
 
-useConsole().log('listsStore', [listsStore.getItems(), listsStore])
+listsStore.addItem({ id: 5, name: 'An another list', type: '0' })
+
+useConsole().log(
+  'listsStore',
+  [
+    listsStore.getItem<Liste>({ id: 2 }),
+    listsStore.getItems<Liste>({ type: '0' }), listsStore
+  ]
+)
 
 
 const componentPath = 'liste/Listes.vue'

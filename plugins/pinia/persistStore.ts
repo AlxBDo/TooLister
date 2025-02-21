@@ -206,6 +206,10 @@ function storeSubscription({ store }: PiniaPluginContext) {
         if (mutation.type !== 'patch object' && mutation?.events) {
             const { newValue, oldValue } = mutation.events as IAnyObject
 
+            if (!newValue || typeof newValue === 'function') {
+                return
+            }
+
             persist(toRaw(state), store)
 
             if (

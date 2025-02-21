@@ -1,5 +1,5 @@
 import type { FetchAllData } from "~/models/api";
-import type { ISearchParamObject } from ".";
+import type { IAnyObject, ISearchParamObject } from ".";
 import type { Item } from "~/models/item";
 import type { View } from "~~/types/view";
 import type ItemRepository from "~/repositories/Item";
@@ -29,8 +29,8 @@ export interface IItemListActions {
     deleteItem: <T extends Item>(deletedItem: T) => void,
     setData: <T>(data: FetchAllData<T>) => void,
     setError: (error?: string) => void,
-    getItem: <T>(criteria: ISearchParamObject) => T,
-    getItems: <T>(criteria?: ISearchParamObject) => T[],
+    getItem: <T extends IAnyObject>(criteria: ISearchParamObject & Partial<T>) => T | undefined,
+    getItems: <T extends Item>(criteria?: ISearchParamObject & Partial<T>) => T[],
     setHubUrl: (hubUrl: URL) => void,
     setItems: <T>(items: T[]) => void,
     setLoading: (isLoading: boolean) => void,

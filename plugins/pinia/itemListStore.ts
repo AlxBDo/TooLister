@@ -37,14 +37,16 @@ export function itemListStore({ store }: PiniaPluginContext) {
         }
 
         if (!store.$state.rewritedActions.includes('getItem')) {
-            store.getItem = <T extends IAnyObject>(criteria: ISearchParamObject & T): T | undefined => {
+            store.getItem = <T extends IAnyObject>(criteria: ISearchParamObject & Partial<T>): T | undefined => {
                 return arrayObjectFindBy<T>(store.$state.items, criteria);
             }
         }
 
         if (!store.$state.rewritedActions.includes('getItems')) {
-            store.getItems = <T extends IAnyObject>(criteria: ISearchParamObject & T): T[] => {
-                return arrayObjectFindAllBy<T>(store.$state.items, criteria);
+            store.getItems = <T extends IAnyObject>(criteria?: ISearchParamObject & Partial<T>): T[] => {
+                return typeof criteria === 'object'
+                    ? arrayObjectFindAllBy<T>(store.$state.items, criteria)
+                    : store.$state.items
             }
         }
 
@@ -63,7 +65,7 @@ export function itemListStore({ store }: PiniaPluginContext) {
             store.setData = <T>({ items, isLoading, error, hubUrl }: FetchAllData<T>) => {
                 store.setItems(items.value);
                 store.setLoading(isLoading.value);
-                if (hubUrl) store.setHubUrl(hubUrl.value);
+                if (hubUrl) store.setHubUrl(hubUrl.value as URL);
 
                 if (error.value instanceof Error) {
                     store.setError(error.value?.message);

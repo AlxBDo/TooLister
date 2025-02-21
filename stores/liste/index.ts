@@ -119,7 +119,14 @@ export const useListeStore = defineStore("liste", {
 
             if (list.unselectedItems) { this.unselectedItems = list.unselectedItems }
 
-            if (!this.persist) { this.persist = true }
+            if (!this.persist && list.id) {
+                this.persist = true
+                this.watch()
+            }
+
+            if (this.persist && list.id) {
+                this.persistState()
+            }
         },
 
         setItems(items: Liste[]) {

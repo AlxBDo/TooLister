@@ -34,7 +34,9 @@ export const useUserStore = (id?: string) => defineStore(id ?? 'user', {
     getters: {
         user: (state) => ({
             ...getParentStorePropertyValue('contact', 0, state.parentsStores),
-            ...state
+            password: state.password,
+            roles: state.roles,
+            username: state.username
         })
     },
 
